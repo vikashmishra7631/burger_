@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    background-color: #030705;
+    color: #f1f5f9;
+    overflow-x: hidden;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+/* Luxury Glassmorphism & Emerald-Gold Gradients */
+.luxury-glass {
+  background: linear-gradient(135deg, rgba(10, 23, 17, 0.78) 0%, rgba(4, 9, 6, 0.92) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(16, 185, 129, 0.15);
+}
+
+.luxury-glass-gold {
+  background: linear-gradient(135deg, rgba(14, 28, 20, 0.85) 0%, rgba(6, 12, 8, 0.95) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(223, 177, 91, 0.25);
+}
+
+.emerald-gradient-text {
+  background: linear-gradient(135deg, #ffffff 0%, #a7f3d0 30%, #10b981 70%, #059669 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-gradient-text {
+  background: linear-gradient(135deg, #ffffff 0%, #fef3c7 35%, #dfb15b 75%, #a37a2c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.silver-gradient-text {
+  background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 60%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #030705;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.35);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.6);
+}
+
+/* Atmospheric Ambient Background */
+.ambient-emerald-glow {
+  background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.18) 0%, rgba(223, 177, 91, 0.08) 35%, rgba(3, 7, 5, 0) 70%);
+}
+
+.ambient-backdrop {
+  background: radial-gradient(ellipse at 70% 30%, rgba(16, 185, 129, 0.12) 0%, rgba(6, 14, 10, 0.8) 45%, #030705 100%);
+}
+
+/* Perspective container */
+.perspective-container {
+  perspective: 1200px;
+}
