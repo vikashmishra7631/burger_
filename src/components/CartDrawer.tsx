@@ -13,7 +13,7 @@ import {
   Mail
 } from 'lucide-react';
 import type { WatchModel } from '../data/chronovaData';
-import type { UserProfile } from './AccountModal';
+import { api, type UserProfile } from '../services/api';
 
 export interface CartItem {
   watch: WatchModel;
@@ -28,7 +28,7 @@ interface CartDrawerProps {
   onRemoveItem: (id: string) => void;
   onClearCart: () => void;
   currentUser: UserProfile | null;
-  onLogin: (email: string, name: string) => void;
+  onLoginSuccess: (user: UserProfile) => void;
 }
 
 export const CartDrawer: React.FC<CartDrawerProps> = ({
@@ -39,12 +39,15 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   onRemoveItem,
   onClearCart,
   currentUser,
-  onLogin,
+  onLoginSuccess,
 }) => {
   const [promoCode, setPromoCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [checkoutComplete, setCheckoutComplete] = useState(false);
   const [orderNumber, setOrderNumber] = useState('');
+  const [certificateNumber, setCertificateNumber] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   
   // Checkout Login Gate State
   const [showAuthGate, setShowAuthGate] = useState(false);
@@ -66,7 +69,6 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   };
 
   const handleCheckoutClick = () => {
-    // If not logged in, prompt VIP authentication first
     if (!currentUser) {
       setShowAuthGate(true);
       return;
@@ -74,28 +76,63 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
     executeOrder();
   };
 
-  const executeOrder = () => {
-    const generatedOrderNum = `CH-${Math.floor(100000 + Math.random() * 900000)}`;
-    setOrderNumber(generatedOrderNum);
-    setCheckoutComplete(true);
-    setShowAuthGate(false);
-    onClearCart();
-    setDiscount(0);
-    setPromoCode('');
+  const executeOrder = async () => {
+    setLoading(true);
+    setError('');
+
+    try {
+      const payload = {
+        items: items.map(i => ({
+          watch: { id: i.watch.id, name: i.watch.name, price: i.watch.price, image: i.watch.image },
+          quantity: i.quantity
+        })),
+        subtotal,
+        discount,
+        total,
+        shippingAddress: 'Geneva Armored Diplomatic Courier Direct'
+      };
+
+      const res = await api.createOrder(payload);
+      setOrderNumber(res.order.orderRef);
+      setCertificateNumber(res.order.certificateNumber);
+      setCheckoutComplete(true);
+      setShowAuthGate(false);
+      onClearCart();
+      if (res.user) onLoginSuccess(res.user);
+      setDiscount(0);
+      setPromoCode('');
+    } catch (err: any) {
+      setError(err.message || 'Failed to complete transaction');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleAuthSubmit = (e: React.FormEvent) => {
+  const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!authEmail.trim()) return;
-    const name = authName.trim() || authEmail.split('@')[0];
-    onLogin(authEmail, name);
-    // Proceed with order immediately once logged in
-    executeOrder();
+    setLoading(true);
+    setError('');
+
+    try {
+      let authRes;
+      if (isRegisterMode) {
+        authRes = await api.register(authEmail, authName, authPassword);
+      } else {
+        authRes = await api.login(authEmail, authPassword);
+      }
+      onLoginSuccess(authRes.user);
+      await executeOrder();
+    } catch (err: any) {
+      setError(err.message || 'Authentication failed');
+      setLoading(false);
+    }
   };
 
   const handleCloseModal = () => {
     setCheckoutComplete(false);
     setShowAuthGate(false);
+    setError('');
     onClose();
   };
 
@@ -127,7 +164,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 <Check className="w-8 h-8" />
               </div>
               <div className="space-y-1">
-                <h4 className="text-2xl font-serif font-bold text-white">Order Confirmed</h4>
+                <h4 className="text-2xl font-serif font-bold text-white">Order Confirmed & Stored</h4>
                 <div className="text-xs font-mono text-emerald-400">Order Ref: {orderNumber}</div>
               </div>
               
@@ -138,17 +175,17 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               )}
 
               <p className="text-xs text-slate-300 max-w-xs mx-auto leading-relaxed">
-                Thank you for your acquisition. A personal horology advisor from our Geneva salon will contact you shortly with armored courier tracking.
+                Your order has been recorded in the database. Serialized Certificate of Origin ({certificateNumber}) has been deposited to your Timepiece Vault.
               </p>
               
               <div className="p-4 rounded-2xl bg-white/[0.02] border border-emerald-500/20 text-[11px] text-slate-300 space-y-1 text-left">
                 <div className="flex justify-between font-medium text-white">
                   <span>Certificate of Origin</span>
-                  <span className="text-emerald-400">Generated ✓</span>
+                  <span className="text-emerald-400">{certificateNumber} ✓</span>
                 </div>
                 <div className="flex justify-between font-medium text-white">
                   <span>5-Year Warranty Vault</span>
-                  <span className="text-emerald-400">Activated ✓</span>
+                  <span className="text-emerald-400">Active until 2031 ✓</span>
                 </div>
               </div>
               
@@ -170,9 +207,15 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   {isRegisterMode ? 'Register Patron Account' : 'VIP Sign In Required'}
                 </h4>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  To assign your serialized warranty certificate and allocate your timepiece, please log in to proceed.
+                  To register your serialized warranty certificate in our backend database, please sign in.
                 </p>
               </div>
+
+              {error && (
+                <div className="p-3 rounded-xl bg-red-950/60 border border-red-500/40 text-xs text-red-300 text-center">
+                  {error}
+                </div>
+              )}
 
               <form onSubmit={handleAuthSubmit} className="space-y-3.5">
                 {isRegisterMode && (
@@ -230,16 +273,20 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
                 <button
                   type="submit"
-                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-400 via-emerald-300 to-teal-300 text-slate-950 font-bold text-xs uppercase tracking-[0.2em] shadow-emerald-glow hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                  disabled={loading}
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-400 via-emerald-300 to-teal-300 text-slate-950 font-bold text-xs uppercase tracking-[0.2em] shadow-emerald-glow hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  <span>{isRegisterMode ? 'CREATE ACCOUNT & COMPLETE ORDER' : 'LOGIN & COMPLETE ORDER'}</span>
+                  <span>{loading ? 'PROCESSING...' : isRegisterMode ? 'CREATE ACCOUNT & COMPLETE ORDER' : 'LOGIN & COMPLETE ORDER'}</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
 
                 <div className="flex items-center justify-between text-xs pt-1">
                   <button
                     type="button"
-                    onClick={() => setIsRegisterMode(!isRegisterMode)}
+                    onClick={() => {
+                      setError('');
+                      setIsRegisterMode(!isRegisterMode);
+                    }}
                     className="text-emerald-400 hover:underline"
                   >
                     {isRegisterMode ? 'Already registered? Sign in' : 'New Collector? Register'}
@@ -277,7 +324,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 <div className="p-3 rounded-xl bg-emerald-950/40 border border-emerald-400/30 flex items-center justify-between text-xs text-slate-300">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span>Logged in as: <strong className="text-white">{currentUser.name}</strong></span>
+                    <span>Authenticated: <strong className="text-white">{currentUser.name}</strong></span>
                   </div>
                   <span className="text-[10px] text-emerald-400 uppercase font-mono">{currentUser.tier}</span>
                 </div>
@@ -377,9 +424,10 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
             <button
               onClick={handleCheckoutClick}
-              className="w-full py-4 rounded-xl bg-gradient-to-r from-emerald-400 via-emerald-300 to-teal-300 text-slate-950 font-bold text-xs uppercase tracking-[0.2em] shadow-emerald-glow hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+              disabled={loading}
+              className="w-full py-4 rounded-xl bg-gradient-to-r from-emerald-400 via-emerald-300 to-teal-300 text-slate-950 font-bold text-xs uppercase tracking-[0.2em] shadow-emerald-glow hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              <span>{currentUser ? 'CONFIRM & ACQUIRE TIMEPIECE' : 'PROCEED TO SECURE CHECKOUT'}</span>
+              <span>{loading ? 'PROCESSING...' : currentUser ? 'CONFIRM & ACQUIRE TIMEPIECE' : 'PROCEED TO SECURE CHECKOUT'}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
 

@@ -1,33 +1,29 @@
-import React, { useState } from 'react';
-import { X, ShieldCheck, Send, User, Lock, Mail, LogOut } from 'lucide-react';
-
-export interface UserProfile {
-  name: string;
-  email: string;
-  memberId: string;
-  tier: string;
-}
+import React, { useState, useEffect } from 'react';
+import { X, ShieldCheck, Send, User, Lock, Mail, LogOut, Check } from 'lucide-react';
+import { api, authStorage, type UserProfile } from '../services/api';
 
 interface AccountModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentUser: UserProfile | null;
-  onLogin: (email: string, name: string) => void;
-  onLogout: () => void;
+  onLoginSuccess: (user: UserProfile) => void;
+  onLogoutSuccess: () => void;
 }
 
 export const AccountModal: React.FC<AccountModalProps> = ({
   isOpen,
   onClose,
   currentUser,
-  onLogin,
-  onLogout,
+  onLoginSuccess,
+  onLogoutSuccess,
 }) => {
   const [activeTab, setActiveTab] = useState<'vault' | 'concierge'>('vault');
   const [authMode, setAuthMode] = useState<'signin' | 'register'>('signin');
   const [nameInput, setNameInput] = useState('');
   const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   
   const [messages, setMessages] = useState<{ sender: 'concierge' | 'user'; text: string; time: string }[]>([
     {
@@ -38,30 +34,70 @@ export const AccountModal: React.FC<AccountModalProps> = ({
   ]);
   const [inputVal, setInputVal] = useState('');
 
+  // Load concierge messages when logged in
+  useEffect(() => {
+    if (currentUser) {
+      api.getConciergeMessages().then(msgs => {
+        if (msgs && msgs.length > 0) {
+          setMessages(msgs);
+        }
+      });
+    }
+  }, [currentUser]);
+
   if (!isOpen) return null;
 
-  const handleAuthSubmit = (e: React.FormEvent) => {
+  const handleAuthSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!emailInput.trim()) return;
-    const resolvedName = nameInput.trim() || (emailInput.split('@')[0]);
-    onLogin(emailInput, resolvedName);
+    setLoading(true);
+    setError('');
+
+    try {
+      if (authMode === 'register') {
+        const res = await api.register(emailInput, nameInput, passwordInput);
+        onLoginSuccess(res.user);
+      } else {
+        const res = await api.login(emailInput, passwordInput);
+        onLoginSuccess(res.user);
+      }
+    } catch (err: any) {
+      setError(err.message || 'Authentication failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSend = (e: React.FormEvent) => {
+  const handleLogout = () => {
+    authStorage.removeToken();
+    onLogoutSuccess();
+  };
+
+  const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputVal.trim()) return;
     const text = inputVal.trim();
     setInputVal('');
 
-    setMessages(prev => [...prev, { sender: 'user', text, time: 'Now' }]);
-    setTimeout(() => {
-      setMessages(prev => [...prev, {
-        sender: 'concierge',
-        text: 'Thank you for reaching out. A Senior Horology Advisor has received your message and will follow up immediately.',
-        time: 'Just now'
-      }]);
-    }, 1000);
+    const optimisticMsg = {
+      sender: 'user' as const,
+      text,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+    setMessages(prev => [...prev, optimisticMsg]);
+
+    try {
+      await api.sendConciergeMessage(text);
+      setTimeout(async () => {
+        const latest = await api.getConciergeMessages();
+        if (latest && latest.length > 0) setMessages(latest);
+      }, 1500);
+    } catch (err) {
+      console.error('Failed to send concierge message:', err);
+    }
   };
+
+  const vaultItems = currentUser?.vaultItems || [];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-2xl animate-fadeIn">
@@ -91,7 +127,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
           <div className="flex items-center gap-2">
             {currentUser && (
               <button
-                onClick={onLogout}
+                onClick={handleLogout}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-red-500/20 text-xs text-slate-400 hover:text-red-300 transition-colors"
                 title="Sign Out"
               >
@@ -119,9 +155,15 @@ export const AccountModal: React.FC<AccountModalProps> = ({
                 {authMode === 'signin' ? 'Sign In to Your Vault' : 'Create VIP Patron Account'}
               </h3>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Access your serialized timepiece registry, active 5-year manufacture warranties, and private concierge salon.
+                Connect to our Geneva database to view your serialized timepieces, active warranties, and private concierge salon.
               </p>
             </div>
+
+            {error && (
+              <div className="p-3 rounded-xl bg-red-950/60 border border-red-500/40 text-xs text-red-300 text-center">
+                {error}
+              </div>
+            )}
 
             <form onSubmit={handleAuthSubmit} className="space-y-4">
               {authMode === 'register' && (
@@ -179,16 +221,20 @@ export const AccountModal: React.FC<AccountModalProps> = ({
 
               <button
                 type="submit"
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-400 via-emerald-300 to-teal-300 text-slate-950 font-bold text-xs uppercase tracking-[0.2em] shadow-emerald-glow hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                disabled={loading}
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-400 via-emerald-300 to-teal-300 text-slate-950 font-bold text-xs uppercase tracking-[0.2em] shadow-emerald-glow hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
               >
-                <span>{authMode === 'signin' ? 'ENTER COLLECTOR VAULT' : 'CREATE PATRON ACCOUNT'}</span>
+                <span>{loading ? 'AUTHENTICATING...' : authMode === 'signin' ? 'ENTER COLLECTOR VAULT' : 'CREATE PATRON ACCOUNT'}</span>
               </button>
             </form>
 
             <div className="text-center pt-2">
               <button
                 type="button"
-                onClick={() => setAuthMode(authMode === 'signin' ? 'register' : 'signin')}
+                onClick={() => {
+                  setError('');
+                  setAuthMode(authMode === 'signin' ? 'register' : 'signin');
+                }}
                 className="text-xs text-emerald-400 hover:underline"
               >
                 {authMode === 'signin' 
@@ -210,7 +256,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
                     : 'border-transparent text-slate-400 hover:text-white'
                 }`}
               >
-                My Timepiece Vault
+                My Timepiece Vault ({vaultItems.length})
               </button>
               <button
                 onClick={() => setActiveTab('concierge')}
@@ -230,32 +276,44 @@ export const AccountModal: React.FC<AccountModalProps> = ({
                 <div className="space-y-6">
                   <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-400/30 flex items-center justify-between">
                     <div>
-                      <div className="text-xs text-slate-400">Welcome back,</div>
+                      <div className="text-xs text-slate-400">Authenticated Patron:</div>
                       <div className="text-base font-bold text-white">{currentUser.name}</div>
                       <div className="text-xs text-emerald-400 font-mono">{currentUser.email}</div>
                     </div>
                     <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-bold text-xs uppercase tracking-wider border border-emerald-400/40">
-                      Active Patron
+                      {currentUser.tier}
                     </span>
                   </div>
 
-                  <div className="p-5 rounded-2xl bg-[#08150f] border border-emerald-500/20 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 rounded-xl bg-black p-1 border border-white/10 shrink-0">
-                        <img src="/images/hero_watch.jpg" alt="Apex GT-01" className="w-full h-full object-contain" />
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-bold text-white">Chronova Apex GT-01</h4>
-                        <div className="text-xs text-emerald-400 font-mono">Serial: CN-8800-084 / 500</div>
-                        <div className="text-[11px] text-emerald-400 mt-1">Warranty: Active until October 2031</div>
-                      </div>
+                  {vaultItems.length === 0 ? (
+                    <div className="py-12 text-center space-y-2 text-slate-400 border border-dashed border-white/10 rounded-2xl p-6">
+                      <p className="text-sm font-medium text-slate-200">No timepieces registered in vault yet.</p>
+                      <p className="text-xs text-slate-400">Acquire a timepiece from the collection to register its serialized warranty certificate.</p>
                     </div>
-                    <div className="hidden sm:block text-right text-xs">
-                      <span className="px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-400/40 text-emerald-300 font-bold">
-                        Chronometer Certified
-                      </span>
+                  ) : (
+                    <div className="space-y-3">
+                      {vaultItems.map((item, idx) => (
+                        <div key={idx} className="p-5 rounded-2xl bg-[#08150f] border border-emerald-500/20 flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="w-16 h-16 rounded-xl bg-black p-1 border border-white/10 shrink-0">
+                              <img src="/images/hero_watch.jpg" alt={item.name} className="w-full h-full object-contain" />
+                            </div>
+                            <div>
+                              <h4 className="text-sm font-bold text-white">{item.name}</h4>
+                              <div className="text-xs text-emerald-400 font-mono">Serial: {item.serialNumber}</div>
+                              <div className="text-[11px] text-slate-400 mt-1">Warranty: Active until {item.warrantyExpiry}</div>
+                            </div>
+                          </div>
+                          <div className="hidden sm:block text-right text-xs">
+                            <span className="px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-400/40 text-emerald-300 font-bold flex items-center gap-1">
+                              <Check className="w-3.5 h-3.5" />
+                              <span>Verified Certificate</span>
+                            </span>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  </div>
+                  )}
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                     <div className="p-3.5 rounded-xl bg-black/40 border border-white/10">
@@ -268,7 +326,7 @@ export const AccountModal: React.FC<AccountModalProps> = ({
                     </div>
                     <div className="p-3.5 rounded-xl bg-black/40 border border-white/10">
                       <span className="text-[10px] text-slate-400 block uppercase">Certificate of Origin</span>
-                      <span className="font-semibold text-white mt-1 block">Blockchain Registered ✓</span>
+                      <span className="font-semibold text-white mt-1 block">Database Registered ✓</span>
                     </div>
                   </div>
                 </div>

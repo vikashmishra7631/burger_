@@ -9,7 +9,7 @@ import {
   ShieldCheck,
   Palette
 } from 'lucide-react';
-import type { UserProfile } from './AccountModal';
+import type { UserProfile } from '../services/api';
 
 interface NavbarProps {
   cartCount: number;
@@ -42,7 +42,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Curated 4 core navigation links for an uncluttered, spacious luxury header
   const primaryLinks = [
     { label: "Collections", href: "#collections" },
     { label: "Technology", href: "#technology" },
@@ -99,7 +98,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           </a>
 
-          {/* Center: Curated 4 Essential Links with Generous Breathing Room */}
+          {/* Center: Curated 4 Essential Links */}
           <nav className="hidden md:flex items-center gap-8 lg:gap-11 text-[11px] uppercase tracking-[0.25em] font-medium text-slate-300">
             {primaryLinks.map((link) => (
               <a
@@ -113,7 +112,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             ))}
           </nav>
 
-          {/* Right: Minimal, Balanced Action Controls */}
+          {/* Right: Minimal Action Controls */}
           <div className="flex items-center gap-3 sm:gap-4 shrink-0">
             
             {/* Palette Switcher */}

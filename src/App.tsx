@@ -15,8 +15,9 @@ import { Footer } from './components/Footer';
 import { ProductModal } from './components/ProductModal';
 import { CartDrawer, type CartItem } from './components/CartDrawer';
 import { SearchModal } from './components/SearchModal';
-import { AccountModal, type UserProfile } from './components/AccountModal';
+import { AccountModal } from './components/AccountModal';
 import { APEX_GT01, type WatchModel, type CollectionItem } from './data/chronovaData';
+import { api, authStorage, type UserProfile } from './services/api';
 
 export const App: React.FC = () => {
   // Theme State (Default: Smoked Racing Emerald & Gold)
@@ -37,17 +38,22 @@ export const App: React.FC = () => {
   const [selectedWatch, setSelectedWatch] = useState<WatchModel | null>(null);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
 
-  const handleLogin = (email: string, name: string) => {
-    const user: UserProfile = {
-      name: name || 'Lord Alexander Wright',
-      email: email || 'patron@chronova.ch',
-      memberId: `#CN-${Math.floor(1000 + Math.random() * 9000)}-CH`,
-      tier: 'PATRON TIER',
-    };
+  // Restore authenticated session from backend on page load
+  useEffect(() => {
+    const token = authStorage.getToken();
+    if (token) {
+      api.getMe().then(user => {
+        if (user) setCurrentUser(user);
+      });
+    }
+  }, []);
+
+  const handleLoginSuccess = (user: UserProfile) => {
     setCurrentUser(user);
   };
 
-  const handleLogout = () => {
+  const handleLogoutSuccess = () => {
+    authStorage.removeToken();
     setCurrentUser(null);
   };
 
@@ -215,7 +221,7 @@ export const App: React.FC = () => {
         onBuyNow={handleBuyNow}
       />
 
-      {/* Shopping Bag Drawer with Login Gate */}
+      {/* Shopping Bag Drawer with Real Backend Checkout */}
       <CartDrawer
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
@@ -224,7 +230,7 @@ export const App: React.FC = () => {
         onRemoveItem={handleRemoveItem}
         onClearCart={handleClearCart}
         currentUser={currentUser}
-        onLogin={handleLogin}
+        onLoginSuccess={handleLoginSuccess}
       />
 
       {/* Search Modal */}
@@ -237,13 +243,13 @@ export const App: React.FC = () => {
         }}
       />
 
-      {/* Account Modal (VIP Login & Vault) */}
+      {/* Account Modal (VIP Login & Real Vault) */}
       <AccountModal
         isOpen={isAccountOpen}
         onClose={() => setIsAccountOpen(false)}
         currentUser={currentUser}
-        onLogin={handleLogin}
-        onLogout={handleLogout}
+        onLoginSuccess={handleLoginSuccess}
+        onLogoutSuccess={handleLogoutSuccess}
       />
 
     </div>

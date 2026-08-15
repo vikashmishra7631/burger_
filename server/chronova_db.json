@@ -1,0 +1,80 @@
+{
+  "users": [
+    {
+      "id": "usr_1",
+      "name": "Lord Alexander Wright",
+      "email": "alexander@chronova.ch",
+      "passwordHash": "$2a$10$7v5J4q5H/G2c9t6f8g7h6eY7v8w9x0y1z2a3b4c5d6e7f8g9h0",
+      "memberId": "#CN-7792-CH",
+      "tier": "PATRON TIER",
+      "vaultItems": [
+        {
+          "id": "gt01-084",
+          "name": "Chronova Apex GT-01",
+          "serialNumber": "CN-8800-084 / 500",
+          "warrantyExpiry": "October 2031",
+          "certifiedChronometer": true,
+          "acquiredAt": "2026-08-10"
+        }
+      ],
+      "createdAt": "2026-08-15T19:36:06.221Z"
+    },
+    {
+      "id": "usr_1786822566997",
+      "name": "vikashmishra76314",
+      "email": "vikashmishra76314@gmail.com",
+      "passwordHash": "$2b$10$suYtQYBVLVpecfyeOSSR7uqWBEi0OVyUqJcnmgnKghzbk71HlQk3e",
+      "memberId": "#CN-3027-CH",
+      "tier": "PATRON TIER",
+      "vaultItems": [
+        {
+          "id": "vault_1786822567025_apex-gt01",
+          "name": "CHRONOVA APEX GT-01",
+          "serialNumber": "CN-8800-837 / 500",
+          "warrantyExpiry": "October 2031",
+          "certificateNumber": "GENEVA-31481",
+          "certifiedChronometer": true,
+          "acquiredAt": "2026-08-15"
+        }
+      ],
+      "createdAt": "2026-08-15T19:36:06.997Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": "ord_1786822567023",
+      "orderRef": "CH-498755",
+      "certificateNumber": "GENEVA-31481",
+      "userId": "usr_1786822566997",
+      "userEmail": "vikashmishra76314@gmail.com",
+      "userName": "vikashmishra76314",
+      "items": [
+        {
+          "watch": {
+            "id": "apex-gt01",
+            "name": "CHRONOVA APEX GT-01",
+            "price": 1299,
+            "image": "/images/hero_watch.jpg"
+          },
+          "quantity": 1
+        }
+      ],
+      "subtotal": 1299,
+      "discount": 0,
+      "total": 1299,
+      "shippingAddress": "Geneva Armored Diplomatic Courier Direct",
+      "status": "CONFIRMED · DISPATCH QUEUE",
+      "createdAt": "2026-08-15T19:36:07.023Z"
+    }
+  ],
+  "subscribers": [],
+  "conciergeMessages": [
+    {
+      "id": "msg_init",
+      "userId": "usr_1",
+      "sender": "concierge",
+      "text": "Good evening Lord Alexander. Your Chronova Apex GT-01 allocation is secured with 5-year warranty active. How may the Geneva salon assist you today?",
+      "time": "18:24"
+    }
+  ]
+}
