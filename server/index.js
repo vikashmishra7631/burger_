@@ -26,14 +26,14 @@ app.use(express.json());
 
 // 2. Rate Limiting to protect endpoints
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 50, // limit each IP to 50 auth requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 50,
   message: { error: 'Too many authentication attempts. Please try again in 15 minutes.' }
 });
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 200,
+  max: 300,
   message: { error: 'Too many requests. Please try again later.' }
 });
 
@@ -80,7 +80,6 @@ app.post('/api/auth/register', authLimiter, async (req, res) => {
       return res.status(409).json({ error: 'A patron with this email address already exists' });
     }
 
-    // Encrypt password using bcrypt with salt factor 10
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
@@ -97,7 +96,6 @@ app.post('/api/auth/register', authLimiter, async (req, res) => {
 
     userDB.create(newUser);
 
-    // Generate secure JWT token
     const token = jwt.sign(
       { id: newUser.id, email: newUser.email, name: newUser.name, tier: newUser.tier },
       JWT_SECRET,
@@ -127,7 +125,6 @@ app.post('/api/auth/login', authLimiter, async (req, res) => {
 
     const user = userDB.findByEmail(email);
     if (!user) {
-      // If user doesn't exist yet, auto-register them seamlessly for luxury client onboarding
       const salt = await bcrypt.genSalt(10);
       const passwordHash = await bcrypt.hash(password, salt);
       const newUser = {
@@ -150,13 +147,11 @@ app.post('/api/auth/login', authLimiter, async (req, res) => {
       return res.json({ message: 'Patron session established', token, user: safeUser });
     }
 
-    // Verify bcrypt password
     const isMatch = await bcrypt.compare(password, user.passwordHash);
     if (!isMatch) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    // Generate JWT
     const token = jwt.sign(
       { id: user.id, email: user.email, name: user.name, tier: user.tier },
       JWT_SECRET,
@@ -281,7 +276,6 @@ app.post('/api/concierge', authenticateToken, (req, res) => {
   };
   conciergeDB.addMessage(userMsg);
 
-  // Automated Luxury Concierge Response
   setTimeout(() => {
     const conciergeMsg = {
       id: `msg_${Date.now() + 1}`,
@@ -296,11 +290,38 @@ app.post('/api/concierge', authenticateToken, (req, res) => {
   res.status(201).json({ message: userMsg });
 });
 
+// --- ADMIN SALON DASHBOARD ENDPOINT ---
+app.get('/api/admin/overview', (req, res) => {
+  const rawUsers = userDB.getAll();
+  const safeUsers = rawUsers.map(({ passwordHash, ...safe }) => safe);
+  const orders = orderDB.getAll();
+  const subscribers = subscriberDB.getAll();
+  const conciergeMessages = conciergeDB.getAll();
+
+  const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0);
+  const totalWatchesSold = orders.reduce((sum, o) => sum + (o.items?.reduce((isum, i) => isum + i.quantity, 0) || 0), 0);
+
+  res.json({
+    metrics: {
+      totalPatrons: safeUsers.length,
+      totalOrders: orders.length,
+      totalRevenue,
+      totalWatchesSold,
+      totalSubscribers: subscribers.length
+    },
+    users: safeUsers,
+    orders,
+    subscribers,
+    conciergeMessages
+  });
+});
+
 // Start Server
 app.listen(PORT, () => {
   console.log(`\n==================================================`);
   console.log(` 💎 CHRONOVA Haute Horlogerie Backend Active`);
   console.log(` 🌐 Server URL: http://localhost:${PORT}`);
   console.log(` 🔒 Security: Helmet, CORS, Rate-Limiting, Bcrypt, JWT`);
+  console.log(` 📊 Admin Salon API: http://localhost:${PORT}/api/admin/overview`);
   console.log(`==================================================\n`);
 });

@@ -16,6 +16,7 @@ import { ProductModal } from './components/ProductModal';
 import { CartDrawer, type CartItem } from './components/CartDrawer';
 import { SearchModal } from './components/SearchModal';
 import { AccountModal } from './components/AccountModal';
+import { AdminDashboard } from './components/AdminDashboard';
 import { APEX_GT01, type WatchModel, type CollectionItem } from './data/chronovaData';
 import { api, authStorage, type UserProfile } from './services/api';
 
@@ -33,6 +34,7 @@ export const App: React.FC = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
   
   // Product Detail Modal State
   const [selectedWatch, setSelectedWatch] = useState<WatchModel | null>(null);
@@ -116,6 +118,7 @@ export const App: React.FC = () => {
         setIsSearchOpen(false);
         setIsAccountOpen(false);
         setIsProductModalOpen(false);
+        setIsAdminOpen(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -210,7 +213,7 @@ export const App: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <Footer />
+      <Footer onOpenAdmin={() => setIsAdminOpen(true)} />
 
       {/* Product Detail Modal */}
       <ProductModal
@@ -250,6 +253,12 @@ export const App: React.FC = () => {
         currentUser={currentUser}
         onLoginSuccess={handleLoginSuccess}
         onLogoutSuccess={handleLogoutSuccess}
+      />
+
+      {/* Admin Salon Dashboard */}
+      <AdminDashboard
+        isOpen={isAdminOpen}
+        onClose={() => setIsAdminOpen(false)}
       />
 
     </div>

@@ -1,9 +1,13 @@
 import React from 'react';
-import { audioEngine } from '../utils/audioEngine';
+import { Database } from 'lucide-react';
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  onOpenAdmin?: () => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
   return (
-    <footer className="relative w-full bg-[#030508] border-t border-white/[0.08] text-slate-400 select-none pt-20 pb-12 px-6 sm:px-10">
+    <footer className="relative w-full bg-[#020504] border-t border-emerald-500/15 text-slate-400 select-none pt-20 pb-12 px-6 sm:px-10">
       <div className="max-w-7xl mx-auto space-y-16">
         
         {/* Top Row: Brand & Columns */}
@@ -12,8 +16,8 @@ export const Footer: React.FC = () => {
           {/* Brand Info (2 Columns) */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full border border-chronova-gold/60 flex items-center justify-center bg-chronova-gold/10">
-                <span className="font-cinzel text-chronova-gold text-sm font-bold">C</span>
+              <div className="w-8 h-8 rounded-full border border-emerald-400/60 flex items-center justify-center bg-emerald-950/40">
+                <span className="font-cinzel text-emerald-400 text-sm font-bold">C</span>
               </div>
               <span className="font-cinzel tracking-[0.28em] text-xl font-bold text-white uppercase">
                 CHRONOVA
@@ -24,19 +28,32 @@ export const Footer: React.FC = () => {
               Geneva manufacture of precision-engineered automatic chronographs and bespoke mechanical complications.
             </p>
 
-            <div className="text-[11px] font-mono text-chronova-gold/80">
+            <div className="text-[11px] font-mono text-emerald-400/80">
               CHRONOVA MANUFACTURE S.A. · RUE DU RHÔNE 42, GENÈVE
             </div>
+
+            {/* Admin Dashboard Trigger */}
+            {onOpenAdmin && (
+              <div className="pt-2">
+                <button
+                  onClick={onOpenAdmin}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-950/50 hover:bg-emerald-900/60 border border-emerald-500/30 text-emerald-300 text-xs font-semibold uppercase tracking-wider transition-all shadow-emerald-glow"
+                >
+                  <Database className="w-3.5 h-3.5" />
+                  <span>Salon Admin Database</span>
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Column: SHOP */}
           <div className="space-y-4">
             <h4 className="text-xs font-bold uppercase tracking-[0.25em] text-white">SHOP</h4>
             <ul className="space-y-2.5 text-xs">
-              <li><a href="#collections" onClick={() => audioEngine.playHapticClick()} className="hover:text-chronova-gold transition-colors">Men's Timepieces</a></li>
-              <li><a href="#collections" onClick={() => audioEngine.playHapticClick()} className="hover:text-chronova-gold transition-colors">Women's Complications</a></li>
-              <li><a href="#collections" onClick={() => audioEngine.playHapticClick()} className="hover:text-chronova-gold transition-colors">Limited Edition</a></li>
-              <li><a href="#collections" onClick={() => audioEngine.playHapticClick()} className="hover:text-chronova-gold transition-colors">Accessories & Straps</a></li>
+              <li><a href="#collections" className="hover:text-emerald-400 transition-colors">Men's Timepieces</a></li>
+              <li><a href="#collections" className="hover:text-emerald-400 transition-colors">Women's Complications</a></li>
+              <li><a href="#collections" className="hover:text-emerald-400 transition-colors">Limited Edition</a></li>
+              <li><a href="#collections" className="hover:text-emerald-400 transition-colors">Accessories & Straps</a></li>
             </ul>
           </div>
 
@@ -44,10 +61,10 @@ export const Footer: React.FC = () => {
           <div className="space-y-4">
             <h4 className="text-xs font-bold uppercase tracking-[0.25em] text-white">SUPPORT</h4>
             <ul className="space-y-2.5 text-xs">
-              <li><a href="#newsletter" onClick={() => audioEngine.playHapticClick()} className="hover:text-chronova-gold transition-colors">Track Order</a></li>
-              <li><a href="#story" onClick={() => audioEngine.playHapticClick()} className="hover:text-chronova-gold transition-colors">5-Year Warranty</a></li>
-              <li><a href="#newsletter" onClick={() => audioEngine.playHapticClick()} className="hover:text-chronova-gold transition-colors">Returns & Service</a></li>
-              <li><a href="#newsletter" onClick={() => audioEngine.playHapticClick()} className="hover:text-chronova-gold transition-colors">Contact Concierge</a></li>
+              <li><a href="#newsletter" className="hover:text-emerald-400 transition-colors">Track Order</a></li>
+              <li><a href="#story" className="hover:text-emerald-400 transition-colors">5-Year Warranty</a></li>
+              <li><a href="#newsletter" className="hover:text-emerald-400 transition-colors">Returns & Service</a></li>
+              <li><a href="#newsletter" className="hover:text-emerald-400 transition-colors">Contact Concierge</a></li>
             </ul>
           </div>
 
@@ -55,10 +72,10 @@ export const Footer: React.FC = () => {
           <div className="space-y-4">
             <h4 className="text-xs font-bold uppercase tracking-[0.25em] text-white">COMPANY</h4>
             <ul className="space-y-2.5 text-xs">
-              <li><a href="#story" onClick={() => audioEngine.playHapticClick()} className="hover:text-chronova-gold transition-colors">Our Story</a></li>
-              <li><a href="#craftsmanship" onClick={() => audioEngine.playHapticClick()} className="hover:text-chronova-gold transition-colors">Craftsmanship</a></li>
-              <li><a href="#sustainability" onClick={() => audioEngine.playHapticClick()} className="hover:text-chronova-gold transition-colors">Sustainability</a></li>
-              <li><a href="#gallery" onClick={() => audioEngine.playHapticClick()} className="hover:text-chronova-gold transition-colors">Journal & Media</a></li>
+              <li><a href="#story" className="hover:text-emerald-400 transition-colors">Our Story</a></li>
+              <li><a href="#craftsmanship" className="hover:text-emerald-400 transition-colors">Craftsmanship</a></li>
+              <li><a href="#sustainability" className="hover:text-emerald-400 transition-colors">Sustainability</a></li>
+              <li><a href="#gallery" className="hover:text-emerald-400 transition-colors">Journal & Media</a></li>
             </ul>
           </div>
 
@@ -66,29 +83,33 @@ export const Footer: React.FC = () => {
           <div className="space-y-4">
             <h4 className="text-xs font-bold uppercase tracking-[0.25em] text-white">FOLLOW US</h4>
             <ul className="space-y-2.5 text-xs">
-              <li><a href="https://instagram.com" target="_blank" rel="noreferrer" className="hover:text-chronova-gold transition-colors">Instagram</a></li>
-              <li><a href="https://youtube.com" target="_blank" rel="noreferrer" className="hover:text-chronova-gold transition-colors">YouTube</a></li>
-              <li><a href="https://x.com" target="_blank" rel="noreferrer" className="hover:text-chronova-gold transition-colors">X (Twitter)</a></li>
-              <li><a href="https://linkedin.com" target="_blank" rel="noreferrer" className="hover:text-chronova-gold transition-colors">LinkedIn</a></li>
+              <li><a href="https://instagram.com" target="_blank" rel="noreferrer" className="hover:text-emerald-400 transition-colors">Instagram</a></li>
+              <li><a href="https://youtube.com" target="_blank" rel="noreferrer" className="hover:text-emerald-400 transition-colors">YouTube</a></li>
+              <li><a href="https://x.com" target="_blank" rel="noreferrer" className="hover:text-emerald-400 transition-colors">X (Twitter)</a></li>
+              <li><a href="https://linkedin.com" target="_blank" rel="noreferrer" className="hover:text-emerald-400 transition-colors">LinkedIn</a></li>
             </ul>
           </div>
 
         </div>
 
         {/* Bottom Bar: Copyright & Motto */}
-        <div className="pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+        <div className="pt-8 border-t border-emerald-500/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
           <div>
-            © 2026 Chronova. All rights reserved.
+            © 2026 Chronova Manufacture Genève. All rights reserved.
           </div>
 
-          <div className="font-serif italic text-slate-300 text-sm tracking-wider">
+          <div className="font-serif italic text-emerald-300 text-sm tracking-wider">
             "TIME BEYOND ORDINARY."
           </div>
 
           <div className="flex gap-6 text-[11px]">
             <a href="#privacy" className="hover:underline">Privacy Policy</a>
             <a href="#terms" className="hover:underline">Terms of Service</a>
-            <a href="#cookies" className="hover:underline">Cookie Preferences</a>
+            {onOpenAdmin && (
+              <button onClick={onOpenAdmin} className="text-emerald-400 hover:underline">
+                Admin Salon
+              </button>
+            )}
           </div>
         </div>
 

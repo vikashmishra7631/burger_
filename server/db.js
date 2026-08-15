@@ -14,7 +14,7 @@ const defaultSchema = {
       id: "usr_1",
       name: "Lord Alexander Wright",
       email: "alexander@chronova.ch",
-      passwordHash: "$2a$10$7v5J4q5H/G2c9t6f8g7h6eY7v8w9x0y1z2a3b4c5d6e7f8g9h0", // demo hash
+      passwordHash: "$2a$10$7v5J4q5H/G2c9t6f8g7h6eY7v8w9x0y1z2a3b4c5d6e7f8g9h0",
       memberId: "#CN-7792-CH",
       tier: "PATRON TIER",
       vaultItems: [
@@ -68,6 +68,10 @@ export function writeDB(data) {
 
 // User Operations
 export const userDB = {
+  getAll: () => {
+    const db = readDB();
+    return db.users;
+  },
   findByEmail: (email) => {
     const db = readDB();
     return db.users.find(u => u.email.toLowerCase() === email.toLowerCase().trim());
@@ -96,6 +100,10 @@ export const userDB = {
 
 // Order Operations
 export const orderDB = {
+  getAll: () => {
+    const db = readDB();
+    return db.orders;
+  },
   create: (orderData) => {
     const db = readDB();
     db.orders.unshift(orderData);
@@ -110,6 +118,10 @@ export const orderDB = {
 
 // Subscriber Operations
 export const subscriberDB = {
+  getAll: () => {
+    const db = readDB();
+    return db.subscribers;
+  },
   add: (email) => {
     const db = readDB();
     const existing = db.subscribers.find(s => s.email.toLowerCase() === email.toLowerCase().trim());
@@ -125,6 +137,10 @@ export const subscriberDB = {
 
 // Concierge Operations
 export const conciergeDB = {
+  getAll: () => {
+    const db = readDB();
+    return db.conciergeMessages;
+  },
   getByUser: (userId) => {
     const db = readDB();
     return db.conciergeMessages.filter(m => m.userId === userId);

@@ -32,10 +32,60 @@ export interface UserProfile {
   memberId: string;
   tier: string;
   vaultItems?: VaultItem[];
+  createdAt?: string;
+}
+
+export interface OrderItem {
+  watch: { id: string; name: string; price: number; image: string };
+  quantity: number;
+}
+
+export interface OrderRecord {
+  id: string;
+  orderRef: string;
+  certificateNumber: string;
+  userId: string;
+  userEmail: string;
+  userName: string;
+  items: OrderItem[];
+  subtotal: number;
+  discount: number;
+  total: number;
+  shippingAddress: string;
+  status: string;
+  createdAt: string;
+}
+
+export interface SubscriberRecord {
+  id: string;
+  email: string;
+  subscribedAt: string;
+}
+
+export interface ConciergeRecord {
+  id: string;
+  userId: string;
+  sender: 'user' | 'concierge';
+  text: string;
+  time: string;
+}
+
+export interface AdminOverviewData {
+  metrics: {
+    totalPatrons: number;
+    totalOrders: number;
+    totalRevenue: number;
+    totalWatchesSold: number;
+    totalSubscribers: number;
+  };
+  users: UserProfile[];
+  orders: OrderRecord[];
+  subscribers: SubscriberRecord[];
+  conciergeMessages: ConciergeRecord[];
 }
 
 export interface OrderPayload {
-  items: Array<{ watch: { id: string; name: string; price: number; image: string }; quantity: number }>;
+  items: OrderItem[];
   subtotal: number;
   discount: number;
   total: number;
@@ -112,7 +162,7 @@ export const api = {
     return data;
   },
 
-  getOrders: async () => {
+  getOrders: async (): Promise<OrderRecord[]> => {
     const token = authStorage.getToken();
     if (!token) return [];
     const res = await fetch(`${API_BASE_URL}/orders`, {
@@ -154,5 +204,16 @@ export const api = {
       body: JSON.stringify({ text })
     });
     return await res.json();
+  },
+
+  // 6. Admin Overview
+  getAdminOverview: async (): Promise<AdminOverviewData | null> => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/admin/overview`);
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
   }
 };
