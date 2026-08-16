@@ -240,6 +240,47 @@
   },
   "orders": [
     {
+      "orderId": "ORD-516050",
+      "createdAt": "2026-08-16T07:43:34.560Z",
+      "customer": {
+        "name": "Alex Mercer",
+        "address": "742 Evergreen Terrace, Apt 4B",
+        "phone": "(555) 382-9012",
+        "paymentMethod": "apple"
+      },
+      "items": [
+        {
+          "id": "combo_1786866199088",
+          "name": "Custom Burger Meal (Nashville Hot Chicken)",
+          "price": 19.99,
+          "qty": 1,
+          "notes": "Side: Loaded Queso Tots • Drink: Smoked Vanilla Shake • Dip: Hot Honey Sriracha"
+        },
+        {
+          "id": "cart_1786866204297",
+          "name": "Smash Beast Double",
+          "price": 11.99,
+          "qty": 1,
+          "notes": ""
+        }
+      ],
+      "pricing": {
+        "subtotal": 31.98,
+        "discount": 0,
+        "deliveryFee": 0,
+        "tax": 2.56,
+        "tip": 5,
+        "grandTotal": 39.54
+      },
+      "status": "DELIVERED",
+      "courier": {
+        "name": "Marcus B. (E-Bike)",
+        "etaMinutes": 18,
+        "lat": 40.7128,
+        "lng": -74.006
+      }
+    },
+    {
       "orderId": "ORD-793659",
       "createdAt": "2026-08-16T07:41:25.507Z",
       "customer": {
