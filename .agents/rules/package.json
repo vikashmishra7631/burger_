@@ -1,0 +1,27 @@
+{
+  "name": "bistro-stack-delivery-backend",
+  "version": "1.0.0",
+  "description": "Artisan Flame Burger & Wood-Fired Pizza Delivery API Server",
+  "type": "module",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js"
+  },
+  "keywords": [
+    "express",
+    "delivery",
+    "restaurant",
+    "api",
+    "security"
+  ],
+  "author": "Antigravity",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^5.0.1",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0"
+  }
+}

@@ -1,0 +1,2091 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">BISTRO & STACK — Artisan Flame Burgers & Wood-Fired Pizza</title>
+  
+  <!-- Modern Clean Typography: Plus Jakarta Sans & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fff7ed',
+              100: '#ffedd5',
+              500: '#ea580c',
+              600: '#c2410c',
+              700: '#9a3412',
+              dark: '#1c1917',
+              accent: '#d97706'
+            },
+            pizza: {
+              50: '#fff1f2',
+              100: '#ffe4e6',
+              500: '#e11d48', // Rich Neapolitan tomato red
+              600: '#be123c',
+              dark: '#1c1917'
+            },
+            surface: {
+              cream: '#faf9f6',
+              light: '#f5f4f0',
+              card: '#ffffff',
+              border: '#e7e5e4',
+              muted: '#78716c'
+            }
+          },
+          fontFamily: {
+            heading: ['Outfit', 'sans-serif'],
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          },
+          boxShadow: {
+            'soft': '0 4px 20px -2px rgba(28, 25, 23, 0.05), 0 2px 6px -1px rgba(28, 25, 23, 0.03)',
+            'hover': '0 20px 35px -5px rgba(28, 25, 23, 0.08), 0 8px 16px -4px rgba(28, 25, 23, 0.04)',
+            'drawer': '-10px 0 40px -10px rgba(28, 25, 23, 0.12)',
+            'glow-brand': '0 10px 25px -5px rgba(234, 88, 12, 0.25)',
+          },
+          animation: {
+            'scale-pop': 'scalePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            'pulse-soft': 'pulseSoft 2s ease-in-out infinite',
+          },
+          keyframes: {
+            scalePop: {
+              '0%': { transform: 'scale(0.85)' },
+              '100%': { transform: 'scale(1)' }
+            },
+            pulseSoft: {
+              '0%, 100%': { transform: 'scale(1)', opacity: '1' },
+              '50%': { transform: 'scale(1.03)', opacity: '0.9' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    * {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+    
+    body {
+      background-color: #faf9f6;
+      color: #1c1917;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+    }
+    
+    ::-webkit-scrollbar {
+      width: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #faf9f6;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #d6d3d1;
+      border-radius: 99px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #ea580c;
+    }
+
+    .glass-nav {
+      background: rgba(250, 249, 246, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(231, 229, 228, 0.9);
+    }
+
+    .clean-card {
+      background: #ffffff;
+      border: 1px solid rgba(231, 229, 228, 0.9);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .clean-card:hover {
+      border-color: rgba(234, 88, 12, 0.35);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 35px -5px rgba(28, 25, 23, 0.08), 0 8px 16px -4px rgba(28, 25, 23, 0.04);
+    }
+
+    /* THE SMOOTH PHYSICAL GLIDING FOOD ELEMENT */
+    #scrolling-master-food {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 45;
+      will-change: transform, opacity;
+      transform-origin: top left;
+    }
+
+    .food-glow {
+      filter: drop-shadow(0 20px 25px rgba(28, 25, 23, 0.2)) drop-shadow(0 8px 10px rgba(234, 88, 12, 0.15));
+    }
+  </style>
+</head>
+<body class="relative min-h-screen selection:bg-brand-500 selection:text-white pb-20">
+
+  <!-- ==========================================================
+       THE PHYSICAL SCROLLING FOOD (Adapts to Burger/Pizza Mode)
+       ========================================================== -->
+  <div id="scrolling-master-food" class="food-glow">
+    <div id="flying-food-inner" class="relative w-full h-full">
+      <img 
+        id="flying-food-img"
+        src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&auto=format&fit=crop&q=80" 
+        alt="Gliding Food" 
+        class="w-full h-full object-cover rounded-2xl border-2 border-white shadow-xl"
+      />
+      <!-- Dynamic Floating Indicator Badge -->
+      <div id="food-floating-badge" class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-brand-dark text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-md flex items-center gap-1.5 whitespace-nowrap transition-all duration-300">
+        <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
+        <span id="food-badge-text">Gliding to Menu...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Announcement Bar -->
+  <div class="bg-brand-dark text-white py-2 px-4 text-xs font-medium tracking-wide">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="bg-brand-500 text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded-full" id="promo-pill">Chef Special</span>
+        <span>Use coupon <span class="font-bold text-brand-100 underline">FLAME25</span> for <strong>25% OFF</strong></span>
+      </div>
+      <div class="hidden md:flex items-center gap-6 text-stone-300 text-xs">
+        <span class="flex items-center gap-1.5"><i data-lucide="clock" class="w-3.5 h-3.5 text-brand-500"></i> Delivery in 20–25 mins</span>
+        <span class="flex items-center gap-1.5"><i data-lucide="award" class="w-3.5 h-3.5 text-brand-accent"></i> <span id="quality-guarantee-text">100% Grass-Fed Angus</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Navigation Header -->
+  <header class="sticky top-0 z-40 glass-nav px-4 lg:px-8 py-3.5 transition-all duration-300">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div id="brand-logo-icon" class="w-10 h-10 rounded-2xl bg-brand-500 text-white flex items-center justify-center shadow-md shadow-brand-500/20 group-hover:scale-105 transition-all">
+          <i data-lucide="flame" class="w-5 h-5 fill-white"></i>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-heading font-extrabold text-xl tracking-tight text-brand-dark flex items-center gap-1" id="brand-logo-text">
+            Bistro<span class="text-brand-500">&</span>Stack
+          </span>
+          <span class="text-[11px] text-surface-muted font-medium" id="brand-tagline">Artisan Kitchen &amp; Delivery</span>
+        </div>
+      </a>
+
+      <!-- GLOBAL MODE SWITCHER: Burger Mode vs Pizza Mode -->
+      <div class="flex items-center bg-stone-100 p-1 rounded-2xl border border-stone-200 shadow-inner">
+        <button 
+          id="mode-btn-burger" 
+          onclick="switchFoodMode('burger')" 
+          class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 bg-white text-brand-dark shadow-sm"
+        >
+          <span class="text-base">🍔</span>
+          <span>Burger Mode</span>
+        </button>
+
+        <button 
+          id="mode-btn-pizza" 
+          onclick="switchFoodMode('pizza')" 
+          class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 text-stone-500 hover:text-brand-dark"
+        >
+          <span class="text-base">🍕</span>
+          <span>Pizza Mode</span>
+          <span class="bg-red-500 text-white text-[9px] font-extrabold px-1.5 py-0.2 rounded-full uppercase animate-pulse">New</span>
+        </button>
+      </div>
+
+      <!-- Search Input -->
+      <div class="hidden md:flex flex-1 max-w-xs relative">
+        <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400"></i>
+        <input 
+          id="menu-search-input" 
+          type="text" 
+          placeholder="Search menu..." 
+          oninput="handleSearch(this.value)"
+          class="w-full bg-white text-sm text-brand-dark placeholder-stone-400 pl-10 pr-4 py-2 rounded-xl border border-surface-border focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/10 shadow-sm transition"
+        />
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-3">
+        <button 
+          id="tracker-header-btn" 
+          onclick="openTrackerModal()"
+          class="hidden sm:flex items-center gap-2 bg-white hover:bg-stone-50 border border-surface-border text-xs font-semibold px-3.5 py-2 rounded-xl text-stone-700 shadow-sm transition"
+        >
+          <i data-lucide="radar" class="w-4 h-4 text-brand-500 animate-spin"></i>
+          <span>Track Order</span>
+        </button>
+
+        <!-- Cart Button -->
+        <button 
+          onclick="toggleCartDrawer(true)" 
+          class="relative flex items-center gap-2.5 bg-brand-500 hover:bg-brand-600 text-white font-semibold text-sm px-4 py-2.5 rounded-xl shadow-glow-brand transition active:scale-95"
+        >
+          <div class="relative">
+            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+            <span id="cart-badge-count" class="absolute -top-2.5 -right-2.5 bg-brand-dark text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
+          </div>
+          <span class="font-heading font-bold" id="cart-btn-subtotal">$0.00</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="hero-section" class="relative pt-12 pb-16 px-4 lg:px-8 max-w-7xl mx-auto">
+    <div class="grid lg:grid-cols-12 gap-12 items-center">
+      
+      <!-- Hero Copy -->
+      <div class="lg:col-span-7 space-y-6">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-200 text-brand-600 text-xs font-semibold" id="hero-badge-pill">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-brand-500"></i>
+          <span id="hero-badge-text">Artisan Charcoal Seared Daily</span>
+        </div>
+
+        <h1 class="font-heading text-4xl sm:text-5xl lg:text-6xl font-extrabold text-brand-dark leading-[1.12] tracking-tight" id="hero-heading">
+          Handcrafted Burgers, <br />
+          <span class="text-brand-500" id="hero-heading-accent">Delivered Fresh &amp; Hot.</span>
+        </h1>
+
+        <p class="text-stone-600 text-base sm:text-lg max-w-xl leading-relaxed font-normal" id="hero-desc">
+          Double-smashed grass-fed beef with golden crispy crusts, aged Wisconsin cheddar, house-smoked bacon jam, and toasted brioche buns. Express delivery to your doorstep.
+        </p>
+
+        <div class="flex flex-wrap items-center gap-4 pt-2">
+          <a href="#combo-builder-section" class="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-heading font-bold text-sm sm:text-base shadow-glow-brand hover:scale-[1.01] active:scale-95 transition-all">
+            <i data-lucide="package-plus" class="w-4 h-4"></i>
+            <span id="hero-combo-btn-text">Build Your Custom Combo</span>
+          </a>
+          
+          <a href="#menu-catalog" class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white hover:bg-stone-50 border border-surface-border text-brand-dark font-semibold text-sm shadow-sm transition">
+            <span>Scroll to Menu</span>
+            <i data-lucide="arrow-down" class="w-4 h-4 text-brand-500"></i>
+          </a>
+        </div>
+
+        <!-- Metrics -->
+        <div class="grid grid-cols-3 gap-3 sm:gap-4 pt-6 border-t border-surface-border">
+          <div class="bg-white p-4 rounded-2xl border border-surface-border shadow-soft text-center">
+            <div class="font-heading text-xl sm:text-2xl font-bold text-brand-dark">22 min</div>
+            <div class="text-stone-500 text-xs font-medium mt-0.5">Avg Delivery Time</div>
+          </div>
+          <div class="bg-white p-4 rounded-2xl border border-surface-border shadow-soft text-center">
+            <div class="font-heading text-xl sm:text-2xl font-bold text-brand-dark">4.9 ★</div>
+            <div class="text-stone-500 text-xs font-medium mt-0.5">15,000+ Reviews</div>
+          </div>
+          <div class="bg-white p-4 rounded-2xl border border-surface-border shadow-soft text-center">
+            <div class="font-heading text-xl sm:text-2xl font-bold text-brand-500">$0 Fee</div>
+            <div class="text-stone-500 text-xs font-medium mt-0.5">On Orders &gt; $30</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Hero Featured Food Card Slot -->
+      <div class="lg:col-span-5 relative">
+        <div class="relative w-full aspect-square max-w-md mx-auto flex items-center justify-center">
+          
+          <div class="relative z-10 w-full clean-card p-6 rounded-3xl shadow-hover overflow-hidden">
+            
+            <div class="flex items-center justify-between mb-4">
+              <span class="bg-brand-50 text-brand-600 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 border border-brand-100" id="hero-card-tag">
+                <i data-lucide="award" class="w-3.5 h-3.5"></i> Featured Recipe
+              </span>
+              <span class="text-stone-500 text-xs font-semibold bg-stone-100 px-2.5 py-1 rounded-lg" id="hero-card-cal">
+                890 kcal
+              </span>
+            </div>
+
+            <!-- The Hero Target Slot: Exact position where food starts -->
+            <div class="relative h-56 rounded-2xl flex items-center justify-center overflow-hidden bg-stone-100/50 border border-stone-200" id="hero-food-slot">
+              <div class="text-center p-4">
+                <span class="text-[11px] font-bold text-stone-400 uppercase tracking-wider block" id="hero-slot-title">Featured Dish</span>
+                <span class="text-xs font-semibold text-brand-500 mt-1 block">Scroll down to slide into menu ↓</span>
+              </div>
+            </div>
+
+            <div class="mt-4 flex items-center justify-between">
+              <div>
+                <h3 class="font-heading font-bold text-xl text-brand-dark" id="hero-card-title">Inferno Double Angus</h3>
+                <p class="text-xs text-stone-500" id="hero-card-desc">Double 1/3 lb Angus, Smoked Gouda, Jalapeño Crisps</p>
+              </div>
+              <div class="text-right">
+                <span class="text-xs text-stone-400 line-through font-semibold" id="hero-card-orig-price">$16.50</span>
+                <div class="font-heading text-2xl font-bold text-brand-500" id="hero-card-price">$13.99</div>
+              </div>
+            </div>
+
+            <button 
+              onclick="quickAddHeroItem()" 
+              class="mt-5 w-full bg-brand-dark hover:bg-brand-600 text-white font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all"
+            >
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+              <span id="hero-order-btn-text">Add Special to Cart — $13.99</span>
+            </button>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Interactive Combo Customizer Section -->
+  <section id="combo-builder-section" class="relative py-12 px-4 lg:px-8 max-w-7xl mx-auto">
+    
+    <div class="bg-white p-6 sm:p-10 rounded-3xl border border-surface-border shadow-soft">
+      
+      <!-- Section Header -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+        <div>
+          <div class="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-500 mb-1.5">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            <span>Interactive Customizer</span>
+          </div>
+          <h2 class="font-heading text-3xl sm:text-4xl font-extrabold text-brand-dark" id="combo-section-title">
+            Custom Meal Deal Builder
+          </h2>
+          <p class="text-stone-500 text-sm mt-1" id="combo-section-desc">
+            Pick your main entree, loaded side, craft beverage, and artisanal dip. Save <strong class="text-brand-500 font-semibold">$5.51</strong> instantly.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-3 bg-stone-50 px-4 py-2.5 rounded-2xl border border-stone-200">
+          <div class="text-right">
+            <span class="text-[10px] text-stone-400 font-bold uppercase tracking-wider block">Bundle Price</span>
+            <div class="flex items-center gap-2">
+              <span id="combo-orig-price" class="text-xs text-stone-400 line-through font-semibold">$22.50</span>
+              <span id="combo-live-price" class="font-heading text-2xl font-bold text-brand-500">$16.99</span>
+            </div>
+          </div>
+          <span class="bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold px-2.5 py-1 rounded-lg">
+            Save $5.51
+          </span>
+        </div>
+      </div>
+
+      <!-- Step 1: Pick Main Item (Burger / Pizza) -->
+      <div class="space-y-6">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-stone-700 flex items-center gap-2">
+              <span class="w-5 h-5 rounded-full bg-brand-500 text-white text-[11px] font-bold flex items-center justify-center">1</span>
+              <span id="combo-step-1-title">Choose Signature Burger</span>
+            </h3>
+            <span class="text-xs text-brand-600 font-semibold" id="selected-mains-title">Smash Beast Double</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5" id="combo-mains-grid">
+          </div>
+        </div>
+
+        <!-- Step 2: Pick Side / Appetizer -->
+        <div class="pt-4 border-t border-surface-border">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-stone-700 flex items-center gap-2">
+              <span class="w-5 h-5 rounded-full bg-brand-accent text-white text-[11px] font-bold flex items-center justify-center">2</span>
+              <span id="combo-step-2-title">Choose Loaded Side</span>
+            </h3>
+            <span class="text-xs text-brand-accent font-semibold" id="selected-side-title">Cajun Truffle Fries</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5" id="combo-sides-grid">
+          </div>
+        </div>
+
+        <!-- Step 3: Pick Drink & Dip -->
+        <div class="pt-4 border-t border-surface-border grid md:grid-cols-2 gap-6">
+          
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-stone-700 flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full bg-stone-700 text-white text-[11px] font-bold flex items-center justify-center">3</span>
+                Choose Beverage
+              </h3>
+              <span class="text-xs text-stone-600 font-semibold" id="selected-drink-title">Smoked Vanilla Shake</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2.5" id="combo-drinks-grid">
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-stone-700 flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full bg-stone-700 text-white text-[11px] font-bold flex items-center justify-center">4</span>
+                <span id="combo-step-4-title">Select House Dip</span>
+              </h3>
+              <span class="text-xs text-stone-600 font-semibold" id="selected-dip-title">Smoky Flame Mayo</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2.5" id="combo-dips-grid">
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Add Combo to Cart Bar -->
+        <div class="pt-6 border-t border-surface-border flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-2.5 text-xs text-stone-500">
+            <i data-lucide="shield-check" class="w-5 h-5 text-emerald-600"></i>
+            <span>All combo orders include thermal insulated delivery packaging.</span>
+          </div>
+
+          <button 
+            onclick="addCustomComboToCart()" 
+            class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-heading font-bold text-sm sm:text-base flex items-center justify-center gap-3 shadow-glow-brand active:scale-95 transition-all"
+          >
+            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+            <span>Add Custom Combo to Cart (<span id="combo-btn-price">$16.99</span>)</span>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- Full Menu Catalog Section -->
+  <section id="menu-catalog" class="relative py-12 px-4 lg:px-8 max-w-7xl mx-auto">
+    
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+      <div>
+        <div class="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-500 mb-1.5">
+          <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+          <span>Chef's Kitchen Lineup</span>
+        </div>
+        <h2 class="font-heading text-3xl sm:text-4xl font-extrabold text-brand-dark" id="menu-section-heading">
+          Our Handcrafted Menu
+        </h2>
+      </div>
+
+      <!-- Categories -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none" id="category-tabs-container">
+      </div>
+    </div>
+
+    <!-- Filter Pills Sub-Bar -->
+    <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-3 rounded-2xl border border-surface-border shadow-soft mb-8">
+      <div class="flex items-center gap-2 overflow-x-auto text-xs font-semibold text-stone-600">
+        <span>Filter:</span>
+        <button onclick="toggleDietFilter('all')" class="diet-filter-btn active px-3 py-1.5 rounded-lg bg-brand-dark text-white shadow-sm transition" data-diet="all">All Items</button>
+        <button onclick="toggleDietFilter('spicy')" class="diet-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-diet="spicy">🌶️ Spicy</button>
+        <button onclick="toggleDietFilter('bestseller')" class="diet-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-diet="bestseller">🏆 Best Sellers</button>
+        <button onclick="toggleDietFilter('veggie')" class="diet-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-diet="veggie">🥑 Plant-Based</button>
+      </div>
+
+      <div class="flex items-center gap-2 text-xs text-stone-500 font-medium">
+        <label for="sort-select">Sort by:</label>
+        <select id="sort-select" onchange="handleSortChange(this.value)" class="bg-stone-50 text-brand-dark border border-stone-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-brand-500 text-xs">
+          <option value="popular">Most Popular</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="calories">Lightest Calories</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- PRODUCTS GRID: Card 1 is the dedicated Dock Slot for the sliding hero food item! -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="products-grid-wrapper">
+      
+      <!-- CARD 1: THE OFFICIAL MENU DOCK FOR THE SLIDING FOOD -->
+      <div id="menu-dock-card" class="clean-card rounded-3xl p-5 flex flex-col justify-between group shadow-soft relative border-2 border-brand-500/30">
+        <div>
+          <!-- The exact container slot where the flying item docks -->
+          <div id="menu-food-dock-slot" class="relative h-48 w-full rounded-2xl overflow-hidden mb-4 bg-stone-100 flex items-center justify-center border border-dashed border-stone-300">
+            <div class="text-center p-3">
+              <span class="text-[10px] font-bold text-brand-500 uppercase tracking-wider block">Arrival Dock</span>
+              <span class="text-[11px] text-stone-500" id="dock-slot-subtext">Featured dish docks here</span>
+            </div>
+          </div>
+
+          <div class="flex items-start justify-between gap-2 mb-1.5">
+            <div>
+              <div class="flex items-center gap-1.5">
+                <h3 class="font-heading font-bold text-lg text-brand-dark" id="dock-item-name">Inferno Double Angus</h3>
+                <span id="dock-badge" class="bg-brand-50 text-brand-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-brand-200">Featured</span>
+              </div>
+              <span class="text-[11px] text-emerald-700 font-semibold" id="dock-item-tagline">100% Grass-Fed Angus Seared</span>
+            </div>
+            <div class="font-heading text-lg font-bold text-brand-500" id="dock-item-price">$13.99</div>
+          </div>
+
+          <p class="text-xs text-stone-500 font-normal leading-relaxed" id="dock-item-desc">Double 1/3 lb Angus, Smoked Gouda, charred jalapeño crisps &amp; house brisket jam on toasted brioche.</p>
+        </div>
+
+        <div class="mt-5 pt-4 border-t border-surface-border flex items-center gap-2">
+          <button 
+            id="dock-customize-btn"
+            onclick="openCustomizerModal('b2')" 
+            class="flex-1 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold text-xs flex items-center justify-center gap-1.5 transition"
+          >
+            <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-stone-400"></i>
+            <span>Customize</span>
+          </button>
+
+          <button 
+            onclick="quickAddHeroItem()" 
+            class="w-10 h-10 rounded-xl bg-brand-500 hover:bg-brand-600 text-white flex items-center justify-center shadow-glow-brand active:scale-95 transition"
+            title="Quick Add"
+          >
+            <i data-lucide="plus" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Additional dynamic menu products populated via JS -->
+      <div class="contents" id="products-dynamic-container"></div>
+
+    </div>
+
+  </section>
+
+  <!-- Sliding Cart Drawer -->
+  <div id="cart-backdrop" onclick="toggleCartDrawer(false)" class="fixed inset-0 bg-brand-dark/40 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+  
+  <div id="cart-drawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-white border-l border-surface-border z-50 translate-x-full transition-transform duration-300 ease-out flex flex-col shadow-drawer">
+    
+    <!-- Cart Header -->
+    <div class="p-5 border-b border-surface-border flex items-center justify-between bg-stone-50">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center">
+          <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <h3 class="font-heading font-bold text-base text-brand-dark">Your Order Bag</h3>
+          <span class="text-xs text-stone-500 font-medium" id="cart-item-count-label">0 items</span>
+        </div>
+      </div>
+      <button onclick="toggleCartDrawer(false)" class="w-8 h-8 rounded-xl bg-stone-200/70 hover:bg-stone-200 text-stone-600 flex items-center justify-center transition">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <!-- Free Delivery Progress Bar -->
+    <div class="bg-white px-5 py-3 border-b border-surface-border text-xs">
+      <div class="flex items-center justify-between font-medium mb-1.5">
+        <span id="free-delivery-msg" class="text-stone-600">Add $30.00 for Free Delivery</span>
+        <span id="free-delivery-percent" class="text-brand-500 font-bold">0%</span>
+      </div>
+      <div class="w-full bg-stone-100 rounded-full h-1.5 overflow-hidden">
+        <div id="free-delivery-bar" class="bg-brand-500 h-full w-0 transition-all duration-300"></div>
+      </div>
+    </div>
+
+    <!-- Cart Items List -->
+    <div class="flex-1 overflow-y-auto p-5 space-y-4" id="cart-items-container">
+    </div>
+
+    <!-- Cart Footer & Checkout -->
+    <div class="p-5 border-t border-surface-border bg-stone-50 space-y-4">
+      
+      <!-- Promo Code Input -->
+      <div class="flex gap-2">
+        <input 
+          type="text" 
+          id="coupon-input" 
+          placeholder="Promo code (Try FLAME25)" 
+          class="flex-1 bg-white border border-stone-200 rounded-xl px-3 py-2 text-xs text-brand-dark uppercase placeholder-stone-400 focus:outline-none focus:border-brand-500"
+        />
+        <button 
+          onclick="applyCoupon()" 
+          class="bg-brand-dark hover:bg-brand-600 text-white font-semibold text-xs px-4 py-2 rounded-xl transition"
+        >
+          Apply
+        </button>
+      </div>
+
+      <!-- Bill Breakdown -->
+      <div class="space-y-1.5 text-xs text-stone-500 font-normal">
+        <div class="flex justify-between">
+          <span>Subtotal</span>
+          <span class="text-brand-dark font-semibold" id="cart-summary-subtotal">$0.00</span>
+        </div>
+        <div class="flex justify-between" id="discount-row" style="display: none;">
+          <span class="text-emerald-600 font-medium">Promo Discount (25%)</span>
+          <span class="text-emerald-600 font-semibold" id="cart-summary-discount">-$0.00</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Estimated Delivery</span>
+          <span class="text-brand-dark font-semibold" id="cart-summary-delivery">$2.99</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Tax &amp; Fees (8%)</span>
+          <span class="text-brand-dark font-semibold" id="cart-summary-tax">$0.00</span>
+        </div>
+        <div class="h-[1px] bg-stone-200 my-2"></div>
+        <div class="flex justify-between text-sm font-bold text-brand-dark">
+          <span>Total</span>
+          <span class="text-brand-500 font-heading text-lg" id="cart-summary-total">$0.00</span>
+        </div>
+      </div>
+
+      <!-- Checkout Button -->
+      <button 
+        id="checkout-btn" 
+        onclick="openCheckoutModal()" 
+        class="w-full py-3.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-heading font-bold text-sm flex items-center justify-center gap-2 shadow-glow-brand active:scale-95 transition disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        <span>Proceed to Checkout</span>
+        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- Item Customizer Modal -->
+  <div id="customizer-modal" class="fixed inset-0 z-50 bg-brand-dark/50 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white max-w-lg w-full rounded-3xl border border-surface-border shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-pop">
+      
+      <div class="relative h-48 sm:h-56">
+        <img id="customizer-img" src="" alt="Food Item" class="w-full h-full object-cover" />
+        <button onclick="closeCustomizerModal()" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm text-stone-700 flex items-center justify-center hover:bg-white transition shadow">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+        <div class="absolute bottom-3 left-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-xl text-xs font-semibold text-brand-dark border border-stone-200 shadow-sm" id="customizer-calories">
+          820 kcal
+        </div>
+      </div>
+
+      <div class="p-6 overflow-y-auto flex-1 space-y-5">
+        <div>
+          <h3 class="font-heading text-2xl font-bold text-brand-dark" id="customizer-name">Dish Title</h3>
+          <p class="text-xs text-stone-500 mt-1 leading-relaxed" id="customizer-desc">Description</p>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-stone-700 mb-3">Add-ons &amp; Customizations</h4>
+          <div class="space-y-2" id="customizer-addons-container">
+          </div>
+        </div>
+
+        <div>
+          <label class="text-xs font-bold uppercase tracking-wider text-stone-700 block mb-1.5">Kitchen Special Instructions</label>
+          <input type="text" id="customizer-notes" placeholder="e.g. Extra crispy, sauce on the side, well done..." class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-xs text-brand-dark placeholder-stone-400 focus:outline-none focus:border-brand-500" />
+        </div>
+      </div>
+
+      <div class="p-5 border-t border-surface-border bg-stone-50 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3 bg-white px-3.5 py-2 rounded-xl border border-stone-200 shadow-sm">
+          <button onclick="adjustCustomizerQty(-1)" class="text-stone-500 hover:text-brand-dark font-bold text-sm">-</button>
+          <span id="customizer-qty" class="text-brand-dark font-bold text-xs w-4 text-center">1</span>
+          <button onclick="adjustCustomizerQty(1)" class="text-stone-500 hover:text-brand-dark font-bold text-sm">+</button>
+        </div>
+
+        <button onclick="saveCustomizerItem()" class="flex-1 py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-heading font-bold text-sm flex items-center justify-center gap-2 shadow-glow-brand active:scale-95 transition">
+          <span>Add to Bag</span>
+          <span class="font-bold" id="customizer-total-price">$0.00</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Express Checkout Modal -->
+  <div id="checkout-modal" class="fixed inset-0 z-50 bg-brand-dark/50 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white max-w-md w-full rounded-3xl border border-surface-border shadow-2xl p-6 space-y-5 animate-scale-pop">
+      
+      <div class="flex items-center justify-between border-b border-surface-border pb-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold">
+            <i data-lucide="zap" class="w-4 h-4"></i>
+          </div>
+          <h3 class="font-heading font-bold text-lg text-brand-dark">Express Checkout</h3>
+        </div>
+        <button onclick="closeCheckoutModal()" class="text-stone-400 hover:text-brand-dark">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form id="checkout-form" onsubmit="handlePlaceOrder(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block text-stone-700 font-semibold mb-1">Full Name</label>
+          <input type="text" required value="Alex Mercer" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-brand-dark focus:outline-none focus:border-brand-500" />
+        </div>
+
+        <div>
+          <label class="block text-stone-700 font-semibold mb-1">Delivery Address</label>
+          <input type="text" required value="742 Evergreen Terrace, Apt 4B" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-brand-dark focus:outline-none focus:border-brand-500" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-stone-700 font-semibold mb-1">Phone Number</label>
+            <input type="tel" required value="(555) 382-9012" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-brand-dark focus:outline-none focus:border-brand-500" />
+          </div>
+          <div>
+            <label class="block text-stone-700 font-semibold mb-1">Tip Courier</label>
+            <select id="tip-select" onchange="calculateCart()" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-2.5 py-2 text-brand-dark focus:outline-none focus:border-brand-500">
+              <option value="2.00">$2.00 (Nice)</option>
+              <option value="3.50" selected>$3.50 (Great)</option>
+              <option value="5.00">$5.00 (Hero)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-stone-700 font-semibold mb-2">Payment Method</label>
+          <div class="grid grid-cols-3 gap-2">
+            <label class="flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-brand-500 bg-brand-50 cursor-pointer text-center">
+              <input type="radio" name="payment" value="card" checked class="hidden" />
+              <i data-lucide="credit-card" class="w-4 h-4 text-brand-600"></i>
+              <span class="text-[11px] font-semibold text-brand-dark">Credit Card</span>
+            </label>
+            <label class="flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-stone-200 bg-stone-50 cursor-pointer text-center hover:border-stone-300 transition">
+              <input type="radio" name="payment" value="apple" class="hidden" />
+              <i data-lucide="smartphone" class="w-4 h-4 text-stone-600"></i>
+              <span class="text-[11px] font-semibold text-brand-dark">Apple Pay</span>
+            </label>
+            <label class="flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-stone-200 bg-stone-50 cursor-pointer text-center hover:border-stone-300 transition">
+              <input type="radio" name="payment" value="cash" class="hidden" />
+              <i data-lucide="banknote" class="w-4 h-4 text-stone-600"></i>
+              <span class="text-[11px] font-semibold text-brand-dark">Cash</span>
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-3.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-heading font-bold text-sm flex items-center justify-center gap-2 shadow-glow-brand active:scale-95 transition mt-4">
+          <i data-lucide="check-circle" class="w-4 h-4"></i>
+          <span>Place Order (<span id="modal-checkout-total">$0.00</span>)</span>
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Live Order Tracker Modal -->
+  <div id="tracker-modal" class="fixed inset-0 z-50 bg-brand-dark/50 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white max-w-lg w-full rounded-3xl border border-surface-border shadow-2xl p-6 space-y-5 animate-scale-pop">
+      
+      <div class="flex items-center justify-between border-b border-surface-border pb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+            <h3 class="font-heading font-bold text-lg text-brand-dark">Live Order Tracking</h3>
+          </div>
+          <p class="text-xs text-stone-500" id="order-id-label">Order #SZ-9481 • Placed Just Now</p>
+        </div>
+        <button onclick="closeTrackerModal()" class="text-stone-400 hover:text-brand-dark">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="relative h-44 rounded-2xl bg-stone-100 border border-stone-200 overflow-hidden flex items-center justify-center">
+        <div class="absolute inset-0 opacity-40 bg-[radial-gradient(#ea580c_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        
+        <div class="absolute w-3/4 h-[2px] bg-gradient-to-r from-brand-500 via-brand-accent to-emerald-500"></div>
+
+        <div class="absolute left-8 flex flex-col items-center gap-1">
+          <div class="w-8 h-8 rounded-full bg-brand-500 text-white flex items-center justify-center shadow-md">
+            <i data-lucide="flame" class="w-4 h-4 fill-white"></i>
+          </div>
+          <span class="text-[10px] font-semibold text-stone-600">Kitchen</span>
+        </div>
+
+        <div class="absolute left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 animate-bounce">
+          <div class="w-9 h-9 rounded-full bg-brand-dark text-white flex items-center justify-center shadow-lg">
+            <i data-lucide="bike" class="w-5 h-5 text-white"></i>
+          </div>
+          <span class="text-[10px] font-bold text-brand-dark bg-white px-2 py-0.5 rounded-md border border-stone-200 shadow-sm">Marcus B. (E-Bike)</span>
+        </div>
+
+        <div class="absolute right-8 flex flex-col items-center gap-1">
+          <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-md">
+            <i data-lucide="home" class="w-4 h-4"></i>
+          </div>
+          <span class="text-[10px] font-semibold text-stone-600">Your Door</span>
+        </div>
+
+        <div class="absolute top-2.5 right-3 bg-white text-brand-600 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-stone-200 shadow-sm">
+          ⚡ ETA: 14 Mins
+        </div>
+      </div>
+
+      <div class="space-y-3 pt-2">
+        <div class="flex items-center gap-3">
+          <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">✓</div>
+          <div class="flex-1">
+            <div class="text-xs font-bold text-brand-dark">Order Received &amp; Queued</div>
+            <div class="text-[11px] text-stone-500">11:45 AM</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-7 h-7 rounded-full bg-brand-500 text-white flex items-center justify-center text-xs font-bold animate-pulse">🔥</div>
+          <div class="flex-1">
+            <div class="text-xs font-bold text-brand-500" id="kitchen-tracker-status">In the Kitchen Oven</div>
+            <div class="text-[11px] text-stone-500">Piping hot artisanal preparation</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 opacity-60">
+          <div class="w-7 h-7 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-xs font-bold">3</div>
+          <div class="flex-1">
+            <div class="text-xs font-semibold text-stone-600">Courier Pickup &amp; Transit</div>
+            <div class="text-[11px] text-stone-400">Thermal insulated carrier</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-2">
+        <button onclick="closeTrackerModal()" class="w-full py-2.5 bg-stone-100 hover:bg-stone-200 text-brand-dark rounded-xl text-xs font-semibold transition">
+          Dismiss Tracker
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Location Picker Modal -->
+  <div id="location-modal" class="fixed inset-0 z-50 bg-brand-dark/50 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white max-w-sm w-full rounded-3xl border border-surface-border shadow-2xl p-6 space-y-4 animate-scale-pop">
+      <div class="flex items-center justify-between">
+        <h3 class="font-heading font-bold text-brand-dark text-base">Select Delivery Location</h3>
+        <button onclick="closeLocationModal()" class="text-stone-400 hover:text-brand-dark"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      <div class="space-y-2">
+        <button onclick="setDeliveryLocation('Downtown Ave, Suite 402')" class="w-full text-left p-3 rounded-xl bg-stone-50 hover:bg-stone-100 border border-stone-200 text-xs font-semibold text-brand-dark flex items-center justify-between transition">
+          <span>Downtown Ave, Suite 402</span>
+          <span class="text-emerald-700 text-[10px]">18-22 min</span>
+        </button>
+        <button onclick="setDeliveryLocation('West Midtown 5th St')" class="w-full text-left p-3 rounded-xl bg-stone-50 hover:bg-stone-100 border border-stone-200 text-xs font-semibold text-brand-dark flex items-center justify-between transition">
+          <span>West Midtown 5th St</span>
+          <span class="text-emerald-700 text-[10px]">20-25 min</span>
+        </button>
+        <button onclick="setDeliveryLocation('South Financial Plaza')" class="w-full text-left p-3 rounded-xl bg-stone-50 hover:bg-stone-100 border border-stone-200 text-xs font-semibold text-brand-dark flex items-center justify-between transition">
+          <span>South Financial Plaza</span>
+          <span class="text-brand-accent text-[10px]">25-30 min</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- JavaScript Logic & Mode Engine -->
+  <script>
+    // ==========================================================
+    // DATA LAYER: BURGER MODE VS PIZZA MODE
+    // ==========================================================
+    let currentMode = 'burger'; // 'burger' or 'pizza'
+
+    const MODES_DATA = {
+      burger: {
+        title: 'BISTRO & STACK — Artisan Flame Burgers & Express Delivery',
+        brandName: 'Bistro<span class="text-brand-500">&</span>Stack',
+        tagline: 'Artisan Kitchen & Delivery',
+        qualityText: '100% Grass-Fed Angus',
+        heroBadge: 'Artisan Charcoal Seared Daily',
+        heroHeading: 'Handcrafted Burgers, <br /><span class="text-brand-500">Delivered Fresh & Hot.</span>',
+        heroDesc: 'Double-smashed grass-fed beef with golden crispy crusts, aged Wisconsin cheddar, house-smoked bacon jam, and toasted brioche buns.',
+        heroBtnText: 'Build Burger Combo',
+        heroItem: {
+          id: 'b2',
+          name: 'Inferno Double Angus',
+          tag: 'Featured Recipe',
+          cal: '890 kcal',
+          price: 13.99,
+          origPrice: 16.50,
+          desc: 'Double 1/3 lb Angus, Smoked Gouda, charred jalapeño crisps & house brisket jam on toasted brioche.',
+          image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&auto=format&fit=crop&q=80',
+          tagline: '100% Grass-Fed Angus Seared'
+        },
+        comboStep1: 'Choose Signature Burger',
+        comboStep2: 'Choose Loaded Side',
+        comboStep4: 'Select House Dip',
+        comboData: {
+          mains: [
+            { id: 'cb1', name: 'Smash Beast Double', priceMod: 0, cal: 780, img: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=300&auto=format&fit=crop&q=80' },
+            { id: 'cb2', name: 'Inferno Diablo Angus', priceMod: 1.50, cal: 890, img: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&auto=format&fit=crop&q=80' },
+            { id: 'cb3', name: 'Nashville Hot Chicken', priceMod: 0.50, cal: 760, img: 'https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?w=300&auto=format&fit=crop&q=80' },
+            { id: 'cb4', name: 'Smokey BBQ Bacon', priceMod: 1.00, cal: 860, img: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=300&auto=format&fit=crop&q=80' },
+          ],
+          sides: [
+            { id: 'cs1', name: 'Cajun Truffle Fries', priceMod: 0, cal: 420 },
+            { id: 'cs2', name: 'Beer Onion Rings', priceMod: 0, cal: 390 },
+            { id: 'cs3', name: 'Loaded Queso Tots', priceMod: 1.00, cal: 510 },
+            { id: 'cs4', name: 'Crispy Sweet Potato', priceMod: 0.50, cal: 380 },
+          ],
+          drinks: [
+            { id: 'cd1', name: 'Smoked Vanilla Shake', priceMod: 1.50 },
+            { id: 'cd2', name: 'Blood Orange Soda', priceMod: 0 },
+            { id: 'cd3', name: 'Iced Peach Lemonade', priceMod: 0 },
+            { id: 'cd4', name: 'Craft Root Beer Float', priceMod: 1.50 },
+          ],
+          dips: [
+            { id: 'cp1', name: 'Smoky Flame Mayo', priceMod: 0 },
+            { id: 'cp2', name: 'Garlic Truffle Aioli', priceMod: 0 },
+            { id: 'cp3', name: 'Hot Honey Sriracha', priceMod: 0 },
+            { id: 'cp4', name: 'Campfire BBQ Dip', priceMod: 0 },
+          ]
+        },
+        categories: [
+          { id: 'all', name: 'All Items', icon: 'utensils' },
+          { id: 'smash', name: 'Smash Burgers', icon: 'flame' },
+          { id: 'angus', name: 'Flame Angus', icon: 'award' },
+          { id: 'chicken', name: 'Crispy Chicken', icon: 'drumstick' },
+          { id: 'sides', name: 'Loaded Sides', icon: 'french-fries' },
+          { id: 'drinks', name: 'Shakes & Drinks', icon: 'cup-soda' },
+          { id: 'plant', name: 'Plant-Based', icon: 'leaf' },
+        ],
+        products: [
+          {
+            id: 'b1',
+            name: 'Smash Beast Double',
+            category: 'smash',
+            price: 11.99,
+            calories: 780,
+            diet: ['bestseller'],
+            image: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=800&auto=format&fit=crop&q=80',
+            desc: 'Double smashed grass-fed beef patties, American aged cheese, crispy caramelized onions, stack glaze on toasted buttered brioche.',
+          },
+          {
+            id: 'b3',
+            name: 'Truffle & Smoked Gouda',
+            category: 'angus',
+            price: 15.99,
+            calories: 840,
+            diet: [],
+            image: 'https://images.unsplash.com/photo-1583032015879-6725bc7c5db0?w=800&auto=format&fit=crop&q=80',
+            desc: 'Black truffle butter aioli, sautéed wild porcini mushrooms, melted smoked gouda cheese & baby arugula on brioche.',
+          },
+          {
+            id: 'b4',
+            name: 'Nashville Crispy Clucker',
+            category: 'chicken',
+            price: 12.99,
+            calories: 760,
+            diet: ['spicy'],
+            image: 'https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?w=800&auto=format&fit=crop&q=80',
+            desc: '24hr buttermilk fried chicken breast tossed in fiery cayenne pepper oil, tangy dill pickles, creamy slaw & ranch drizzle.',
+          },
+          {
+            id: 'b5',
+            name: 'Smokey BBQ Bacon Stack',
+            category: 'smash',
+            price: 13.49,
+            calories: 860,
+            diet: ['bestseller'],
+            image: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=800&auto=format&fit=crop&q=80',
+            desc: 'Applewood smoked thick-cut bacon, double cheddar, crispy beer-battered onion strings & hickory chipotle BBQ glaze.',
+          },
+          {
+            id: 'b6',
+            name: 'Green Supreme Beyond Burger',
+            category: 'plant',
+            price: 13.99,
+            calories: 620,
+            diet: ['veggie'],
+            image: 'https://images.unsplash.com/photo-1520072959219-c595dc870360?w=800&auto=format&fit=crop&q=80',
+            desc: '100% Plant-based Beyond Patty, avocado puree, vegan garlic aioli, heirloom tomatoes & crispy iceberg in vegan potato bun.',
+          },
+          {
+            id: 's1',
+            name: 'Cajun Truffle Waffle Fries',
+            category: 'sides',
+            price: 5.99,
+            calories: 420,
+            diet: ['bestseller'],
+            image: 'https://images.unsplash.com/photo-1576107232684-1279f3908594?w=800&auto=format&fit=crop&q=80',
+            desc: 'Criss-cross waffle potatoes dusted in signature Creole spice, white truffle oil & shaved parmesan cheese.',
+          },
+          {
+            id: 's2',
+            name: 'Beer-Battered Onion Rings',
+            category: 'sides',
+            price: 5.49,
+            calories: 390,
+            diet: [],
+            image: 'https://images.unsplash.com/photo-1639024471287-032f6670523d?w=800&auto=format&fit=crop&q=80',
+            desc: 'Jumbo sweet vidalia onions soaked in craft IPA batter, fried to golden crunch. Served with campfire dipping sauce.',
+          },
+          {
+            id: 'd1',
+            name: 'Smoked Vanilla Salted Caramel Shake',
+            category: 'drinks',
+            price: 6.49,
+            calories: 510,
+            diet: ['bestseller'],
+            image: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=800&auto=format&fit=crop&q=80',
+            desc: 'Madagascar vanilla bean ice cream hand-spun with smoked bourbon caramel, sea salt crystals & toasted marshmallow topping.',
+          }
+        ],
+        addons: [
+          { id: 'extra_cheese', name: 'Extra Melted Wisconsin Cheddar', price: 1.50 },
+          { id: 'bacon_strips', name: 'Thick Applewood Smoked Bacon', price: 2.25 },
+          { id: 'caramelized_onions', name: 'Caramelized Sweet Onions', price: 1.00 },
+          { id: 'charred_jalapeno', name: 'Charred Flame Jalapeños', price: 0.85 },
+          { id: 'truffle_aioli', name: 'Side of Black Truffle Aioli', price: 1.25 },
+        ]
+      },
+
+      // PIZZA MODE DATA
+      pizza: {
+        title: 'BISTRO & SLICE — Wood-Fired Neapolitan Pizza & Express Delivery',
+        brandName: 'Bistro<span class="text-red-600">&</span>Slice 🍕',
+        tagline: 'Wood-Fired Pizzeria & Express Delivery',
+        qualityText: '100% San Marzano & Buffalo Mozzarella',
+        heroBadge: 'Wood-Fired at 900°F in 90 Seconds',
+        heroHeading: 'Wood-Fired Pizza, <br /><span class="text-red-600">Bubbling Hot & Crispy.</span>',
+        heroDesc: '48-hour fermented sourdough crusts with blistered leopard spots, imported Italian San Marzano sauce, creamy fior di latte, and spicy hot honey drizzle.',
+        heroBtnText: 'Build Custom Pizza Combo',
+        heroItem: {
+          id: 'p1',
+          name: 'Diavola Hot Honey Pepperoni',
+          tag: 'Chef’s Top Pizza',
+          cal: '960 kcal',
+          price: 15.99,
+          origPrice: 18.50,
+          desc: 'Artisan cupping pepperoni, fresh buffalo mozzarella, crushed red pepper flakes, hot honey drizzle & fresh basil.',
+          image: 'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=800&auto=format&fit=crop&q=80',
+          tagline: 'Stone Baked Neapolitan 14"'
+        },
+        comboStep1: 'Choose Wood-Fired Pizza',
+        comboStep2: 'Choose Gourmet Appetizer',
+        comboStep4: 'Select Crust Dipping Sauce',
+        comboData: {
+          mains: [
+            { id: 'cpz1', name: 'Diavola Hot Honey Pepperoni', priceMod: 1.00, cal: 960, img: 'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=300&auto=format&fit=crop&q=80' },
+            { id: 'cpz2', name: 'Truffle Burrata & Wild Mushroom', priceMod: 2.00, cal: 880, img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&auto=format&fit=crop&q=80' },
+            { id: 'cpz3', name: 'Margherita D.O.P. Classica', priceMod: 0, cal: 740, img: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=300&auto=format&fit=crop&q=80' },
+            { id: 'cpz4', name: 'Quattro Formaggi Gorgonzola', priceMod: 1.50, cal: 920, img: 'https://images.unsplash.com/photo-1573821663912-569905455b1c?w=300&auto=format&fit=crop&q=80' },
+          ],
+          sides: [
+            { id: 'cpzs1', name: 'Garlic Parmesan Dough Knots', priceMod: 0, cal: 360 },
+            { id: 'cpzs2', name: 'Crispy Stuffed Mozzarella Sticks', priceMod: 0.50, cal: 410 },
+            { id: 'cpzs3', name: 'Truffle Caesar Salad Bowl', priceMod: 1.00, cal: 290 },
+            { id: 'cpzs4', name: 'Spicy Arancini Rice Balls', priceMod: 1.00, cal: 380 },
+          ],
+          drinks: [
+            { id: 'cpzd1', name: 'Sicilian Blood Orange Soda', priceMod: 0 },
+            { id: 'cpzd2', name: 'Italian Iced Peach Tea', priceMod: 0 },
+            { id: 'cpzd3', name: 'Stracciatella Gelato Shake', priceMod: 1.50 },
+            { id: 'cpzd4', name: 'San Pellegrino Sparkling Limonata', priceMod: 0.50 },
+          ],
+          dips: [
+            { id: 'cpzp1', name: 'Spicy Hot Honey Drizzle', priceMod: 0 },
+            { id: 'cpzp2', name: 'Roasted Garlic Herb Butter', priceMod: 0 },
+            { id: 'cpzp3', name: 'San Marzano Marinara', priceMod: 0 },
+            { id: 'cpzp4', name: 'Creamy Truffle Ranch', priceMod: 0 },
+          ]
+        },
+        categories: [
+          { id: 'all', name: 'All Pizzas', icon: 'utensils' },
+          { id: 'neapolitan', name: 'Wood-Fired Neapolitan', icon: 'flame' },
+          { id: 'deepdish', name: 'Detroit & Deep Dish', icon: 'award' },
+          { id: 'thincrispy', name: 'Crispy Thin Crust', icon: 'sparkles' },
+          { id: 'appetizers', name: 'Artisan Starters', icon: 'french-fries' },
+          { id: 'drinks', name: 'Italian Sodas & Drinks', icon: 'cup-soda' },
+          { id: 'vegan', name: 'Plant-Based Mozzarella', icon: 'leaf' },
+        ],
+        products: [
+          {
+            id: 'pz2',
+            name: 'Truffle Burrata & Wild Porcini',
+            category: 'neapolitan',
+            price: 17.49,
+            calories: 880,
+            diet: ['bestseller'],
+            image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=80',
+            desc: 'Creamy pugliese burrata heart, black truffle crema, sautéed wild mushrooms & fresh thyme on sourdough crust.',
+          },
+          {
+            id: 'pz3',
+            name: 'Margherita D.O.P. Classica',
+            category: 'neapolitan',
+            price: 13.99,
+            calories: 740,
+            diet: ['bestseller'],
+            image: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=800&auto=format&fit=crop&q=80',
+            desc: 'San Marzano tomato sauce, fior di latte mozzarella, extra virgin cold-pressed olive oil & sweet Genovese basil.',
+          },
+          {
+            id: 'pz4',
+            name: 'Detroit Crispy Edge Pepperoni',
+            category: 'deepdish',
+            price: 18.99,
+            calories: 1080,
+            diet: ['spicy'],
+            image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800&auto=format&fit=crop&q=80',
+            desc: 'Thick caramelized Wisconsin brick cheddar cheese crust, racing stripes of rich red sauce, and double crispy pepperoni cups.',
+          },
+          {
+            id: 'pz5',
+            name: 'Prosciutto Di Parma & Arugula',
+            category: 'thincrispy',
+            price: 16.99,
+            calories: 820,
+            diet: [],
+            image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&auto=format&fit=crop&q=80',
+            desc: '24-month aged Prosciutto di Parma, shaved Parmigiano-Reggiano, organic baby arugula & balsamic reduction glaze.',
+          },
+          {
+            id: 'pz6',
+            name: 'Vegan Margherita Supreme',
+            category: 'vegan',
+            price: 15.49,
+            calories: 680,
+            diet: ['veggie'],
+            image: 'https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=800&auto=format&fit=crop&q=80',
+            desc: 'House-made cashew mozzarella, roasted heirloom cherry tomatoes, basil pesto & cold-pressed Sicilian olive oil.',
+          },
+          {
+            id: 'pzs1',
+            name: 'Garlic Parmesan Dough Knots (6pc)',
+            category: 'appetizers',
+            price: 6.49,
+            calories: 360,
+            diet: ['bestseller'],
+            image: 'https://images.unsplash.com/photo-1541745537411-b8046dc6d66c?w=800&auto=format&fit=crop&q=80',
+            desc: 'Warm fluffy sourdough knots brushed with melted roasted garlic butter, parsley & aged grated pecorino.',
+          },
+          {
+            id: 'pzs2',
+            name: 'Crispy Stuffed Mozzarella Sticks',
+            category: 'appetizers',
+            price: 6.99,
+            calories: 410,
+            diet: [],
+            image: 'https://images.unsplash.com/photo-1531749668029-2db88e4276c7?w=800&auto=format&fit=crop&q=80',
+            desc: 'Herb-breaded whole milk mozzarella with bubbling cheese pull, served with warm San Marzano marinara dip.',
+          },
+          {
+            id: 'pzd1',
+            name: 'Sicilian Blood Orange Soda',
+            category: 'drinks',
+            price: 3.99,
+            calories: 140,
+            diet: [],
+            image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=800&auto=format&fit=crop&q=80',
+            desc: 'Small-batch carbonated Sicilian blood orange juice with cane sugar and a hint of fresh crushed mint.',
+          }
+        ],
+        addons: [
+          { id: 'extra_buff_mozz', name: 'Fresh Imported Buffalo Mozzarella', price: 2.50 },
+          { id: 'hot_honey_cup', name: 'Side Cup of Mike’s Hot Honey', price: 1.50 },
+          { id: 'cup_pepperoni', name: 'Extra Crispy Cupping Pepperoni', price: 2.25 },
+          { id: 'truffle_oil', name: 'White Truffle Infused Drizzle', price: 1.75 },
+          { id: 'stuffed_crust', name: 'Cheese-Stuffed Crust Upgrade', price: 3.00 },
+        ]
+      }
+    };
+
+    let currentCategory = 'all';
+    let currentDietFilter = 'all';
+    let currentSearchTerm = '';
+    let currentSort = 'popular';
+    
+    let comboState = {
+      basePrice: 16.99,
+      main: MODES_DATA.burger.comboData.mains[0],
+      side: MODES_DATA.burger.comboData.sides[0],
+      drink: MODES_DATA.burger.comboData.drinks[0],
+      dip: MODES_DATA.burger.comboData.dips[0],
+    };
+
+    let cart = [];
+    let appliedCoupon = null;
+    let activeCustomizerItem = null;
+    let customizerQty = 1;
+    let customizerSelectedAddons = [];
+
+    window.addEventListener('DOMContentLoaded', () => {
+      applyCurrentMode();
+      updateCartUI();
+      initSilkySmoothFoodGlide();
+      lucide.createIcons();
+    });
+
+    // ==========================================================
+    // SWITCH FOOD MODE (Burger <-> Pizza)
+    // ==========================================================
+    function switchFoodMode(mode) {
+      if (currentMode === mode) return;
+      currentMode = mode;
+
+      const burgerBtn = document.getElementById('mode-btn-burger');
+      const pizzaBtn = document.getElementById('mode-btn-pizza');
+
+      if (mode === 'burger') {
+        burgerBtn.className = "flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 bg-white text-brand-dark shadow-sm";
+        pizzaBtn.className = "flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 text-stone-500 hover:text-brand-dark";
+      } else {
+        pizzaBtn.className = "flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 bg-white text-red-600 shadow-sm";
+        burgerBtn.className = "flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 text-stone-500 hover:text-brand-dark";
+      }
+
+      currentCategory = 'all';
+      currentDietFilter = 'all';
+      currentSearchTerm = '';
+
+      applyCurrentMode();
+      showToast(mode === 'pizza' ? '🍕 Switched to Wood-Fired Pizza Mode!' : '🍔 Switched to Gourmet Burger Mode!', 'info');
+    }
+
+    function applyCurrentMode() {
+      const data = MODES_DATA[currentMode];
+
+      document.getElementById('page-title').textContent = data.title;
+      document.getElementById('brand-logo-text').innerHTML = data.brandName;
+      document.getElementById('brand-tagline').textContent = data.tagline;
+      document.getElementById('quality-guarantee-text').textContent = data.qualityText;
+
+      document.getElementById('hero-badge-text').textContent = data.heroBadge;
+      document.getElementById('hero-heading').innerHTML = data.heroHeading;
+      document.getElementById('hero-desc').textContent = data.heroDesc;
+      document.getElementById('hero-combo-btn-text').textContent = data.heroBtnText;
+
+      // Hero Card Update
+      const hero = data.heroItem;
+      document.getElementById('hero-card-tag').innerHTML = `<i data-lucide="award" class="w-3.5 h-3.5"></i> ${hero.tag}`;
+      document.getElementById('hero-card-cal').textContent = hero.cal;
+      document.getElementById('hero-slot-title').textContent = hero.name;
+      document.getElementById('hero-card-title').textContent = hero.name;
+      document.getElementById('hero-card-desc').textContent = hero.desc;
+      document.getElementById('hero-card-origPrice' in hero ? 'hero-card-orig-price' : 'hero-card-orig-price').textContent = `$${hero.origPrice.toFixed(2)}`;
+      document.getElementById('hero-card-price').textContent = `$${hero.price.toFixed(2)}`;
+      document.getElementById('hero-order-btn-text').textContent = `Add Special to Cart — $${hero.price.toFixed(2)}`;
+
+      // Update Flying Master Element Image
+      document.getElementById('flying-food-img').src = hero.image;
+
+      // Update Menu Arrival Card
+      document.getElementById('dock-item-name').textContent = hero.name;
+      document.getElementById('dock-item-tagline').textContent = hero.tagline;
+      document.getElementById('dock-item-price').textContent = `$${hero.price.toFixed(2)}`;
+      document.getElementById('dock-item-desc').textContent = hero.desc;
+      document.getElementById('dock-customize-btn').setAttribute('onclick', `openCustomizerModal('${hero.id}')`);
+
+      // Update Combo Customizer Labels
+      document.getElementById('combo-step-1-title').textContent = data.comboStep1;
+      document.getElementById('combo-step-2-title').textContent = data.comboStep2;
+      document.getElementById('combo-step-4-title').textContent = data.comboStep4;
+
+      // Reset Combo selections to defaults for this mode
+      comboState.main = data.comboData.mains[0];
+      comboState.side = data.comboData.sides[0];
+      comboState.drink = data.comboData.drinks[0];
+      comboState.dip = data.comboData.dips[0];
+
+      renderCategoryTabs();
+      renderComboBuilder();
+      renderProducts();
+      lucide.createIcons();
+    }
+
+    // ==========================================================
+    // BUTTER-SMOOTH PHYSICAL SCROLL-TO-MENU DOCK ENGINE
+    // ==========================================================
+    function initSilkySmoothFoodGlide() {
+      const foodEl = document.getElementById('scrolling-master-food');
+      const heroSlot = document.getElementById('hero-food-slot');
+      const menuSlot = document.getElementById('menu-food-dock-slot');
+      const badgeText = document.getElementById('food-badge-text');
+      const floatingBadge = document.getElementById('food-floating-badge');
+      const dockBadge = document.getElementById('dock-badge');
+
+      if (!foodEl || !heroSlot || !menuSlot) return;
+
+      let curX = 0, curY = 0, curW = 200, curH = 200, curRotate = 0;
+      let initialized = false;
+
+      function animate() {
+        const heroRect = heroSlot.getBoundingClientRect();
+        const menuRect = menuSlot.getBoundingClientRect();
+
+        const scrollY = window.scrollY || window.pageYOffset;
+        const heroAbsY = heroRect.top + scrollY;
+        const menuAbsY = menuRect.top + scrollY - 140;
+        const totalDistance = Math.max(150, menuAbsY - heroAbsY);
+
+        let progress = Math.max(0, Math.min(1, scrollY / totalDistance));
+
+        const ease = progress < 0.5 
+          ? 2 * progress * progress 
+          : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+        let targetX, targetY, targetW, targetH, targetRotate;
+
+        if (progress <= 0.02) {
+          targetX = heroRect.left;
+          targetY = heroRect.top;
+          targetW = heroRect.width;
+          targetH = heroRect.height;
+          targetRotate = 0;
+          if (badgeText) badgeText.textContent = "Scroll to Move to Menu ↓";
+          if (floatingBadge) floatingBadge.style.opacity = "0.9";
+          if (dockBadge) dockBadge.textContent = "Featured";
+        } else if (progress >= 0.98) {
+          targetX = menuRect.left;
+          targetY = menuRect.top;
+          targetW = menuRect.width;
+          targetH = menuRect.height;
+          targetRotate = 0;
+          if (badgeText) badgeText.textContent = "✓ Docked in Menu!";
+          if (floatingBadge) floatingBadge.style.opacity = "0";
+          if (dockBadge) {
+            dockBadge.textContent = "✓ In Menu";
+            dockBadge.className = "bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full";
+          }
+        } else {
+          const arcOffset = Math.sin(progress * Math.PI) * 60;
+          targetX = heroRect.left + (menuRect.left - heroRect.left) * ease - arcOffset;
+          targetY = heroRect.top + (menuRect.top - heroRect.top) * ease;
+          targetW = heroRect.width + (menuRect.width - heroRect.width) * ease;
+          targetH = heroRect.height + (menuRect.height - heroRect.height) * ease;
+          targetRotate = Math.sin(progress * Math.PI * 2) * 6;
+
+          if (badgeText) badgeText.textContent = `Gliding to Menu (${Math.round(progress * 100)}%)`;
+          if (floatingBadge) floatingBadge.style.opacity = "1";
+        }
+
+        if (!initialized) {
+          curX = targetX;
+          curY = targetY;
+          curW = targetW;
+          curH = targetH;
+          curRotate = targetRotate;
+          initialized = true;
+        } else {
+          const lerpFactor = 0.12;
+          curX += (targetX - curX) * lerpFactor;
+          curY += (targetY - curY) * lerpFactor;
+          curW += (targetW - curW) * lerpFactor;
+          curH += (targetH - curH) * lerpFactor;
+          curRotate += (targetRotate - curRotate) * lerpFactor;
+        }
+
+        foodEl.style.transform = `translate3d(${curX}px, ${curY}px, 0) rotate(${curRotate}deg)`;
+        foodEl.style.width = `${curW}px`;
+        foodEl.style.height = `${curH}px`;
+
+        requestAnimationFrame(animate);
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    // COMBO BUILDER
+    function renderComboBuilder() {
+      const comboData = MODES_DATA[currentMode].comboData;
+
+      const mainsContainer = document.getElementById('combo-mains-grid');
+      mainsContainer.innerHTML = comboData.mains.map(m => `
+        <div 
+          onclick="selectComboMain('${m.id}')" 
+          class="cursor-pointer p-3 rounded-2xl border transition-all duration-300 ${comboState.main.id === m.id ? 'bg-brand-50 border-brand-500 shadow-sm ring-1 ring-brand-500' : 'bg-stone-50/70 border-stone-200 hover:bg-stone-50 hover:border-stone-300'}"
+        >
+          <div class="flex items-center gap-3">
+            <img src="${m.img}" alt="${m.name}" class="w-14 h-14 rounded-xl object-cover" />
+            <div class="flex-1 min-w-0">
+              <div class="text-xs font-bold text-brand-dark truncate">${m.name}</div>
+              <div class="text-[11px] text-stone-500 font-medium">${m.cal} kcal</div>
+              <div class="text-[11px] font-bold ${m.priceMod > 0 ? 'text-brand-500' : 'text-emerald-600'}">
+                ${m.priceMod > 0 ? `+$${m.priceMod.toFixed(2)}` : 'Included'}
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      const sidesContainer = document.getElementById('combo-sides-grid');
+      sidesContainer.innerHTML = comboData.sides.map(s => `
+        <div 
+          onclick="selectComboSide('${s.id}')" 
+          class="cursor-pointer p-3 rounded-2xl border transition-all duration-300 ${comboState.side.id === s.id ? 'bg-brand-50 border-brand-accent shadow-sm ring-1 ring-brand-accent' : 'bg-stone-50/70 border-stone-200 hover:bg-stone-50 hover:border-stone-300'}"
+        >
+          <div class="text-xs font-bold text-brand-dark">${s.name}</div>
+          <div class="text-[11px] text-stone-500 font-medium">${s.cal} kcal</div>
+          <div class="text-[11px] font-bold ${s.priceMod > 0 ? 'text-brand-500' : 'text-emerald-600'}">
+            ${s.priceMod > 0 ? `+$${s.priceMod.toFixed(2)}` : 'Included'}
+          </div>
+        </div>
+      `).join('');
+
+      const drinksContainer = document.getElementById('combo-drinks-grid');
+      drinksContainer.innerHTML = comboData.drinks.map(d => `
+        <button 
+          onclick="selectComboDrink('${d.id}')" 
+          class="p-2.5 rounded-xl border text-left transition-all ${comboState.drink.id === d.id ? 'bg-brand-50 border-brand-500 text-brand-dark font-semibold shadow-sm' : 'bg-stone-50 border-stone-200 text-stone-700 hover:bg-stone-100'}"
+        >
+          <div class="text-xs font-medium">${d.name}</div>
+          <div class="text-[10px] ${d.priceMod > 0 ? 'text-brand-500 font-bold' : 'text-stone-500'}">
+            ${d.priceMod > 0 ? `+$${d.priceMod.toFixed(2)}` : 'Included'}
+          </div>
+        </button>
+      `).join('');
+
+      const dipsContainer = document.getElementById('combo-dips-grid');
+      dipsContainer.innerHTML = comboData.dips.map(dp => `
+        <button 
+          onclick="selectComboDip('${dp.id}')" 
+          class="p-2.5 rounded-xl border text-left transition-all ${comboState.dip.id === dp.id ? 'bg-brand-50 border-brand-500 text-brand-dark font-semibold shadow-sm' : 'bg-stone-50 border-stone-200 text-stone-700 hover:bg-stone-100'}"
+        >
+          <div class="text-xs font-medium">${dp.name}</div>
+          <div class="text-[10px] text-emerald-600 font-semibold">Included</div>
+        </button>
+      `).join('');
+
+      document.getElementById('selected-mains-title').textContent = comboState.main.name;
+      document.getElementById('selected-side-title').textContent = comboState.side.name;
+      document.getElementById('selected-drink-title').textContent = comboState.drink.name;
+      document.getElementById('selected-dip-title').textContent = comboState.dip.name;
+
+      const totalComboPrice = comboState.basePrice + comboState.main.priceMod + comboState.side.priceMod + comboState.drink.priceMod;
+      const totalOrigPrice = totalComboPrice + 5.51;
+
+      document.getElementById('combo-orig-price').textContent = `$${totalOrigPrice.toFixed(2)}`;
+      document.getElementById('combo-live-price').textContent = `$${totalComboPrice.toFixed(2)}`;
+      document.getElementById('combo-btn-price').textContent = `$${totalComboPrice.toFixed(2)}`;
+      
+      lucide.createIcons();
+    }
+
+    function selectComboMain(id) {
+      comboState.main = MODES_DATA[currentMode].comboData.mains.find(m => m.id === id);
+      renderComboBuilder();
+    }
+    function selectComboSide(id) {
+      comboState.side = MODES_DATA[currentMode].comboData.sides.find(s => s.id === id);
+      renderComboBuilder();
+    }
+    function selectComboDrink(id) {
+      comboState.drink = MODES_DATA[currentMode].comboData.drinks.find(d => d.id === id);
+      renderComboBuilder();
+    }
+    function selectComboDip(id) {
+      comboState.dip = MODES_DATA[currentMode].comboData.dips.find(dp => dp.id === id);
+      renderComboBuilder();
+    }
+
+    function addCustomComboToCart() {
+      const price = comboState.basePrice + comboState.main.priceMod + comboState.side.priceMod + comboState.drink.priceMod;
+      const comboItem = {
+        id: 'combo_' + Date.now(),
+        name: `Custom ${currentMode === 'pizza' ? 'Pizza Feast' : 'Burger Meal'} (${comboState.main.name})`,
+        price: price,
+        qty: 1,
+        image: comboState.main.img,
+        notes: `Side: ${comboState.side.name} • Drink: ${comboState.drink.name} • Dip: ${comboState.dip.name}`
+      };
+      cart.push(comboItem);
+      updateCartUI();
+      showToast(`Added Custom Combo to bag!`, 'success');
+      toggleCartDrawer(true);
+    }
+
+    // MENU & PRODUCTS
+    function renderCategoryTabs() {
+      const categories = MODES_DATA[currentMode].categories;
+      const container = document.getElementById('category-tabs-container');
+      container.innerHTML = categories.map(cat => `
+        <button 
+          onclick="setCategory('${cat.id}')" 
+          class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-300 ${currentCategory === cat.id ? 'bg-brand-500 text-white font-bold shadow-sm' : 'bg-white text-stone-600 hover:bg-stone-50 border border-surface-border'}"
+        >
+          <i data-lucide="${cat.icon}" class="w-3.5 h-3.5"></i>
+          <span>${cat.name}</span>
+        </button>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    function setCategory(id) {
+      currentCategory = id;
+      renderCategoryTabs();
+      renderProducts();
+    }
+
+    function toggleDietFilter(diet) {
+      currentDietFilter = diet;
+      document.querySelectorAll('.diet-filter-btn').forEach(btn => {
+        if (btn.dataset.diet === diet) {
+          btn.className = 'diet-filter-btn active px-3 py-1.5 rounded-lg bg-brand-dark text-white shadow-sm transition';
+        } else {
+          btn.className = 'diet-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 text-stone-600 hover:bg-stone-200 transition';
+        }
+      });
+      renderProducts();
+    }
+
+    function handleSearch(val) {
+      currentSearchTerm = val.toLowerCase().trim();
+      renderProducts();
+    }
+
+    function handleSortChange(val) {
+      currentSort = val;
+      renderProducts();
+    }
+
+    function renderProducts() {
+      const products = MODES_DATA[currentMode].products;
+      const container = document.getElementById('products-dynamic-container');
+      
+      let filtered = products.filter(item => {
+        const matchesCategory = currentCategory === 'all' || item.category === currentCategory;
+        const matchesSearch = !currentSearchTerm || item.name.toLowerCase().includes(currentSearchTerm) || item.desc.toLowerCase().includes(currentSearchTerm);
+        const matchesDiet = currentDietFilter === 'all' || (item.diet && item.diet.includes(currentDietFilter));
+        return matchesCategory && matchesSearch && matchesDiet;
+      });
+
+      if (currentSort === 'price-low') filtered.sort((a, b) => a.price - b.price);
+      else if (currentSort === 'price-high') filtered.sort((a, b) => b.price - a.price);
+      else if (currentSort === 'calories') filtered.sort((a, b) => a.calories - b.calories);
+
+      container.innerHTML = filtered.map(item => `
+        <div class="clean-card rounded-3xl p-5 flex flex-col justify-between group shadow-soft">
+          <div>
+            <div class="relative h-48 w-full rounded-2xl overflow-hidden mb-4">
+              <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              
+              <div class="absolute top-3 left-3 flex flex-wrap gap-1.5">
+                ${item.diet.includes('bestseller') ? `<span class="bg-brand-dark text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-sm"><i data-lucide="award" class="w-3 h-3"></i> Top Pick</span>` : ''}
+                ${item.diet.includes('spicy') ? `<span class="bg-red-600 text-[10px] font-bold text-white px-2.5 py-0.5 rounded-full shadow-sm">🌶️ Spicy</span>` : ''}
+                ${item.diet.includes('veggie') ? `<span class="bg-emerald-600 text-[10px] font-bold text-white px-2.5 py-0.5 rounded-full shadow-sm">🥑 Plant</span>` : ''}
+              </div>
+
+              <div class="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md px-2.5 py-1 rounded-lg text-[11px] font-semibold text-brand-dark border border-stone-200 shadow-sm">
+                ${item.calories} kcal
+              </div>
+            </div>
+
+            <div class="flex items-start justify-between gap-2 mb-1.5">
+              <h3 class="font-heading font-bold text-lg text-brand-dark group-hover:text-brand-500 transition-colors">${item.name}</h3>
+              <div class="font-heading text-lg font-bold text-brand-500">$${item.price.toFixed(2)}</div>
+            </div>
+
+            <p class="text-xs text-stone-500 font-normal leading-relaxed line-clamp-2">${item.desc}</p>
+          </div>
+
+          <div class="mt-5 pt-4 border-t border-surface-border flex items-center gap-2">
+            <button 
+              onclick="openCustomizerModal('${item.id}')" 
+              class="flex-1 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold text-xs flex items-center justify-center gap-1.5 transition"
+            >
+              <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-stone-400"></i>
+              <span>Customize</span>
+            </button>
+
+            <button 
+              onclick="quickAddToCart('${item.id}')" 
+              class="w-10 h-10 rounded-xl bg-brand-500 hover:bg-brand-600 text-white flex items-center justify-center shadow-glow-brand active:scale-95 transition"
+              title="Quick Add"
+            >
+              <i data-lucide="plus" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    // CART & CHECKOUT
+    function quickAddHeroItem() {
+      const hero = MODES_DATA[currentMode].heroItem;
+      const heroItem = {
+        id: 'hero_' + Date.now(),
+        name: hero.name,
+        price: hero.price,
+        qty: 1,
+        image: hero.image,
+        notes: hero.desc
+      };
+      cart.push(heroItem);
+      updateCartUI();
+      showToast(`Added ${hero.name} to bag!`, 'success');
+      toggleCartDrawer(true);
+    }
+
+    function quickAddToCart(productId) {
+      const products = MODES_DATA[currentMode].products;
+      const item = products.find(p => p.id === productId);
+      if (!item) return;
+
+      const existing = cart.find(c => c.productId === productId && !c.addons?.length && !c.notes);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({
+          id: 'cart_' + Date.now(),
+          productId: item.id,
+          name: item.name,
+          price: item.price,
+          qty: 1,
+          image: item.image,
+          addons: [],
+          notes: ''
+        });
+      }
+
+      updateCartUI();
+      showToast(`Added ${item.name} to bag!`, 'success');
+    }
+
+    function toggleCartDrawer(open) {
+      const drawer = document.getElementById('cart-drawer');
+      const backdrop = document.getElementById('cart-backdrop');
+      if (open) {
+        drawer.classList.remove('translate-x-full');
+        backdrop.classList.remove('opacity-0', 'pointer-events-none');
+        backdrop.classList.add('opacity-100');
+      } else {
+        drawer.classList.add('translate-x-full');
+        backdrop.classList.remove('opacity-100');
+        backdrop.classList.add('opacity-0', 'pointer-events-none');
+      }
+    }
+
+    function updateCartUI() {
+      const totalItems = cart.reduce((acc, i) => acc + i.qty, 0);
+      
+      const badge = document.getElementById('cart-badge-count');
+      badge.textContent = totalItems;
+      badge.classList.remove('animate-scale-pop');
+      void badge.offsetWidth;
+      badge.classList.add('animate-scale-pop');
+
+      document.getElementById('cart-item-count-label').textContent = `${totalItems} item${totalItems === 1 ? '' : 's'}`;
+
+      const container = document.getElementById('cart-items-container');
+      
+      if (cart.length === 0) {
+        container.innerHTML = `
+          <div class="py-16 text-center text-stone-400">
+            <div class="w-14 h-14 rounded-full bg-stone-100 flex items-center justify-center mx-auto mb-3 text-stone-400">
+              <i data-lucide="shopping-bag" class="w-7 h-7"></i>
+            </div>
+            <h4 class="text-brand-dark font-bold text-sm">Your Bag is Empty</h4>
+            <p class="text-xs text-stone-500 mt-1 font-normal">Explore the menu or build a custom combo!</p>
+          </div>
+        `;
+        document.getElementById('checkout-btn').disabled = true;
+      } else {
+        document.getElementById('checkout-btn').disabled = false;
+        container.innerHTML = cart.map(item => `
+          <div class="flex gap-3 bg-stone-50 p-3.5 rounded-2xl border border-stone-200">
+            <img src="${item.image}" alt="${item.name}" class="w-16 h-16 rounded-xl object-cover" />
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-1">
+                <h4 class="text-xs font-bold text-brand-dark truncate">${item.name}</h4>
+                <button onclick="removeCartItem('${item.id}')" class="text-stone-400 hover:text-red-500 transition">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+              <div class="font-heading font-bold text-brand-500 text-xs mt-0.5">$${(item.price * item.qty).toFixed(2)}</div>
+              
+              ${item.notes ? `<div class="text-[10px] text-stone-500 mt-1 line-clamp-1 italic font-normal">${item.notes}</div>` : ''}
+
+              <div class="flex items-center gap-2 mt-2">
+                <button onclick="adjustCartQty('${item.id}', -1)" class="w-6 h-6 rounded-lg bg-white border border-stone-200 text-stone-700 text-xs flex items-center justify-center font-bold shadow-sm">-</button>
+                <span class="text-xs font-bold text-brand-dark">${item.qty}</span>
+                <button onclick="adjustCartQty('${item.id}', 1)" class="w-6 h-6 rounded-lg bg-white border border-stone-200 text-stone-700 text-xs flex items-center justify-center font-bold shadow-sm">+</button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      calculateCart();
+      lucide.createIcons();
+    }
+
+    function adjustCartQty(cartId, delta) {
+      const item = cart.find(c => c.id === cartId);
+      if (!item) return;
+      item.qty += delta;
+      if (item.qty <= 0) {
+        cart = cart.filter(c => c.id !== cartId);
+      }
+      updateCartUI();
+    }
+
+    function removeCartItem(cartId) {
+      cart = cart.filter(c => c.id !== cartId);
+      updateCartUI();
+    }
+
+    function calculateCart() {
+      const subtotal = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
+      const goal = 30.0;
+      const progressPercent = Math.min(100, Math.round((subtotal / goal) * 100));
+      const freeBar = document.getElementById('free-delivery-bar');
+      const freeMsg = document.getElementById('free-delivery-msg');
+      const freePercent = document.getElementById('free-delivery-percent');
+      
+      freeBar.style.width = `${progressPercent}%`;
+      freePercent.textContent = `${progressPercent}%`;
+      
+      let deliveryFee = subtotal > 0 ? (subtotal >= goal ? 0.00 : 2.99) : 0.00;
+      if (subtotal >= goal) {
+        freeMsg.innerHTML = '🎉 You unlocked <strong class="text-emerald-700">Free Delivery!</strong>';
+      } else {
+        const remaining = (goal - subtotal).toFixed(2);
+        freeMsg.innerHTML = `Add <strong>$${remaining}</strong> for Free Delivery`;
+      }
+
+      let discountAmount = 0;
+      if (appliedCoupon && subtotal > 0) {
+        discountAmount = subtotal * appliedCoupon.discount;
+        document.getElementById('discount-row').style.display = 'flex';
+        document.getElementById('cart-summary-discount').textContent = `-$${discountAmount.toFixed(2)}`;
+      } else {
+        document.getElementById('discount-row').style.display = 'none';
+      }
+
+      const taxableAmount = Math.max(0, subtotal - discountAmount);
+      const tax = taxableAmount > 0 ? taxableAmount * 0.08 : 0;
+      
+      const tipSelect = document.getElementById('tip-select');
+      const tip = (subtotal > 0 && tipSelect) ? parseFloat(tipSelect.value || 0) : 0;
+
+      const grandTotal = Math.max(0, taxableAmount + deliveryFee + tax + tip);
+
+      document.getElementById('cart-btn-subtotal').textContent = `$${grandTotal.toFixed(2)}`;
+      document.getElementById('cart-summary-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+      document.getElementById('cart-summary-delivery').textContent = deliveryFee === 0 && subtotal > 0 ? 'FREE' : `$${deliveryFee.toFixed(2)}`;
+      document.getElementById('cart-summary-tax').textContent = `$${tax.toFixed(2)}`;
+      document.getElementById('cart-summary-total').textContent = `$${grandTotal.toFixed(2)}`;
+      
+      const modalTotal = document.getElementById('modal-checkout-total');
+      if (modalTotal) modalTotal.textContent = `$${grandTotal.toFixed(2)}`;
+    }
+
+    const API_BASE_URL = window.location.origin.includes('localhost') ? window.location.origin : 'http://localhost:5000';
+    let currentActiveOrderId = null;
+    let trackerPollInterval = null;
+
+    async function applyCoupon() {
+      const code = document.getElementById('coupon-input').value.trim().toUpperCase();
+      if (!code) {
+        showToast('Please enter a coupon code.', 'error');
+        return;
+      }
+
+      const subtotal = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/coupons/validate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code, subtotal })
+        });
+        const json = await res.json();
+        
+        if (json.success && json.data) {
+          appliedCoupon = { code: json.data.code, discount: json.data.discountPercent / 100 };
+          calculateCart();
+          showToast(`Coupon ${json.data.code} applied: ${json.data.discountPercent}% Off!`, 'success');
+        } else {
+          showToast(json.error || 'Invalid promo code. Try FLAME25', 'error');
+        }
+      } catch (err) {
+        // Local fallback
+        if (code === 'FLAME25') {
+          appliedCoupon = { code: 'FLAME25', discount: 0.25 };
+          calculateCart();
+          showToast('Promo code FLAME25 applied: 25% Off!', 'success');
+        } else {
+          showToast('Invalid promo code. Try FLAME25', 'error');
+        }
+      }
+    }
+
+    function openCustomizerModal(productId) {
+      const currentModeData = MODES_DATA[currentMode];
+      const isHeroItem = (productId === currentModeData.heroItem.id);
+      
+      const item = isHeroItem 
+        ? currentModeData.heroItem 
+        : currentModeData.products.find(p => p.id === productId);
+
+      if (!item) return;
+
+      activeCustomizerItem = item;
+      customizerQty = 1;
+      customizerSelectedAddons = [];
+
+      document.getElementById('customizer-name').textContent = item.name;
+      document.getElementById('customizer-desc').textContent = item.desc;
+      document.getElementById('customizer-img').src = item.image;
+      document.getElementById('customizer-calories').textContent = `${item.cal || item.calories} kcal`;
+      document.getElementById('customizer-notes').value = '';
+      document.getElementById('customizer-qty').textContent = '1';
+
+      const container = document.getElementById('customizer-addons-container');
+      const addons = currentModeData.addons;
+
+      container.innerHTML = addons.map(addon => `
+        <label class="flex items-center justify-between p-2.5 rounded-xl bg-stone-50 border border-stone-200 hover:border-stone-300 cursor-pointer text-xs transition">
+          <div class="flex items-center gap-2.5">
+            <input type="checkbox" value="${addon.id}" onchange="toggleAddon('${addon.id}')" class="rounded accent-brand-500 w-4 h-4" />
+            <span class="text-brand-dark font-medium">${addon.name}</span>
+          </div>
+          <span class="text-brand-500 font-semibold">+$${addon.price.toFixed(2)}</span>
+        </label>
+      `).join('');
+
+      updateCustomizerPrice();
+      document.getElementById('customizer-modal').classList.remove('hidden');
+      document.getElementById('customizer-modal').classList.add('flex');
+    }
+
+    function toggleAddon(addonId) {
+      if (customizerSelectedAddons.includes(addonId)) {
+        customizerSelectedAddons = customizerSelectedAddons.filter(id => id !== addonId);
+      } else {
+        customizerSelectedAddons.push(addonId);
+      }
+      updateCustomizerPrice();
+    }
+
+    function adjustCustomizerQty(delta) {
+      customizerQty = Math.max(1, customizerQty + delta);
+      document.getElementById('customizer-qty').textContent = customizerQty;
+      updateCustomizerPrice();
+    }
+
+    function updateCustomizerPrice() {
+      if (!activeCustomizerItem) return;
+      const addons = MODES_DATA[currentMode].addons;
+      const addonsTotal = customizerSelectedAddons.reduce((acc, addonId) => {
+        const found = addons.find(a => a.id === addonId);
+        return acc + (found ? found.price : 0);
+      }, 0);
+
+      const unitPrice = activeCustomizerItem.price + addonsTotal;
+      const total = unitPrice * customizerQty;
+      document.getElementById('customizer-total-price').textContent = `$${total.toFixed(2)}`;
+    }
+
+    function saveCustomizerItem() {
+      if (!activeCustomizerItem) return;
+      const addons = MODES_DATA[currentMode].addons;
+
+      const addonsTotal = customizerSelectedAddons.reduce((acc, addonId) => {
+        const found = addons.find(a => a.id === addonId);
+        return acc + (found ? found.price : 0);
+      }, 0);
+
+      const addonNames = customizerSelectedAddons.map(id => {
+        return addons.find(a => a.id === id)?.name;
+      }).filter(Boolean);
+
+      const notesInput = document.getElementById('customizer-notes').value.trim();
+      const combinedNotes = [
+        addonNames.length ? `Addons: ${addonNames.join(', ')}` : '',
+        notesInput ? `Note: ${notesInput}` : ''
+      ].filter(Boolean).join(' • ');
+
+      cart.push({
+        id: 'cust_' + Date.now(),
+        productId: activeCustomizerItem.id,
+        name: activeCustomizerItem.name,
+        price: activeCustomizerItem.price + addonsTotal,
+        qty: customizerQty,
+        image: activeCustomizerItem.image,
+        notes: combinedNotes
+      });
+
+      closeCustomizerModal();
+      updateCartUI();
+      showToast(`Added custom ${activeCustomizerItem.name} to bag!`, 'success');
+      toggleCartDrawer(true);
+    }
+
+    function closeCustomizerModal() {
+      document.getElementById('customizer-modal').classList.add('hidden');
+      document.getElementById('customizer-modal').classList.remove('flex');
+    }
+
+    function openCheckoutModal() {
+      if (cart.length === 0) return;
+      toggleCartDrawer(false);
+      calculateCart();
+      document.getElementById('checkout-modal').classList.remove('hidden');
+      document.getElementById('checkout-modal').classList.add('flex');
+    }
+
+    function closeCheckoutModal() {
+      document.getElementById('checkout-modal').classList.add('hidden');
+      document.getElementById('checkout-modal').classList.remove('flex');
+    }
+
+    async function handlePlaceOrder(e) {
+      e.preventDefault();
+      if (cart.length === 0) return;
+
+      const form = e.target;
+      const inputs = form.querySelectorAll('input');
+      const customerName = inputs[0]?.value || 'Alex Mercer';
+      const deliveryAddress = inputs[1]?.value || '742 Evergreen Terrace';
+      const phone = inputs[2]?.value || '555-382-9012';
+      const paymentMethod = form.querySelector('input[name="payment"]:checked')?.value || 'card';
+      const tip = parseFloat(document.getElementById('tip-select')?.value || '3.50');
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<span class="animate-spin inline-block mr-2">⏳</span> Transmitting to Kitchen...`;
+
+      try {
+        const payload = {
+          customerName,
+          deliveryAddress,
+          phone,
+          paymentMethod,
+          couponCode: appliedCoupon ? appliedCoupon.code : null,
+          tip,
+          items: cart
+        };
+
+        const res = await fetch(`${API_BASE_URL}/api/orders`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const json = await res.json();
+        closeCheckoutModal();
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4"></i><span>Place Order</span>`;
+        lucide.createIcons();
+
+        if (json.success && json.data) {
+          currentActiveOrderId = json.data.orderId;
+          cart = [];
+          appliedCoupon = null;
+          updateCartUI();
+          
+          showToast(`Order #${currentActiveOrderId} created on server!`, 'success');
+          openTrackerModal(currentActiveOrderId);
+        } else {
+          throw new Error(json.error || 'Server error placing order');
+        }
+      } catch (err) {
+        closeCheckoutModal();
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4"></i><span>Place Order</span>`;
+        
+        // Fallback simulation
+        const randomOrderNum = Math.floor(100000 + Math.random() * 900000);
+        currentActiveOrderId = `ORD-${randomOrderNum}`;
+        cart = [];
+        updateCartUI();
+        showToast(`Order #${currentActiveOrderId} placed successfully!`, 'success');
+        openTrackerModal(currentActiveOrderId);
+      }
+    }
+
+    async function openTrackerModal(orderId) {
+      const idToTrack = orderId || currentActiveOrderId || 'ORD-948192';
+      currentActiveOrderId = idToTrack;
+
+      document.getElementById('tracker-modal').classList.remove('hidden');
+      document.getElementById('tracker-modal').classList.add('flex');
+      document.getElementById('order-id-label').textContent = `Order #${idToTrack} • Synchronized with Kitchen`;
+
+      // Fetch live order tracking from backend
+      await syncTrackerFromBackend(idToTrack);
+
+      // Poll every 10 seconds for live updates
+      if (trackerPollInterval) clearInterval(trackerPollInterval);
+      trackerPollInterval = setInterval(() => {
+        syncTrackerFromBackend(idToTrack);
+      }, 10000);
+    }
+
+    async function syncTrackerFromBackend(orderId) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/orders/${orderId}/track`);
+        const json = await res.json();
+        if (json.success && json.data) {
+          const { stageTitle, stageDescription, etaMinutes, courier } = json.data;
+          const kitchenStatusEl = document.getElementById('kitchen-tracker-status');
+          if (kitchenStatusEl) {
+            kitchenStatusEl.textContent = stageTitle;
+            kitchenStatusEl.nextElementSibling.textContent = stageDescription;
+          }
+          const etaBadge = document.querySelector('#tracker-modal .border-stone-200.shadow-sm.text-brand-600');
+          if (etaBadge) {
+            etaBadge.textContent = `⚡ ETA: ${etaMinutes} Mins`;
+          }
+        }
+      } catch (e) {
+        // Keep offline preview
+      }
+    }
+
+    function closeTrackerModal() {
+      if (trackerPollInterval) clearInterval(trackerPollInterval);
+      document.getElementById('tracker-modal').classList.add('hidden');
+      document.getElementById('tracker-modal').classList.remove('flex');
+    }
+
+    function openLocationModal() {
+      document.getElementById('location-modal').classList.remove('hidden');
+      document.getElementById('location-modal').classList.add('flex');
+    }
+
+    function closeLocationModal() {
+      document.getElementById('location-modal').classList.add('hidden');
+      document.getElementById('location-modal').classList.remove('flex');
+    }
+
+    function setDeliveryLocation(loc) {
+      document.getElementById('current-location-text').textContent = loc;
+      closeLocationModal();
+      showToast(`Delivery location set to ${loc}`, 'info');
+    }
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      let borderClass = 'border-stone-200';
+      let icon = 'check-circle';
+      if (type === 'success') {
+        borderClass = 'border-emerald-200 text-emerald-800 bg-emerald-50';
+      } else if (type === 'error') {
+        borderClass = 'border-red-200 text-red-800 bg-red-50';
+        icon = 'alert-circle';
+      } else {
+        borderClass = 'border-stone-200 text-brand-dark bg-white';
+      }
+
+      toast.className = `px-4 py-3 rounded-2xl border ${borderClass} shadow-lg flex items-center gap-3 text-xs font-semibold transition-all transform duration-300 translate-y-4 opacity-0 pointer-events-auto`;
+      toast.innerHTML = `
+        <i data-lucide="${icon}" class="w-4 h-4 text-brand-500"></i>
+        <span>${message}</span>
+      `;
+      
+      container.appendChild(toast);
+      lucide.createIcons();
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-4', 'opacity-0');
+      }, 10);
+
+      setTimeout(() => {
+        toast.classList.add('translate-y-4', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+  </script>
+</body>
+</html>
