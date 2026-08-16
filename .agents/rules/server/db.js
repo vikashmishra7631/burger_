@@ -304,7 +304,16 @@ export const db = {
   },
 
   // List recent orders
-  getRecentOrders(limit = 20) {
+  getRecentOrders(limit = 50) {
     return dbData.orders.slice(0, limit);
+  },
+
+  // Update order status
+  updateOrderStatus(orderId, newStatus) {
+    const order = this.getOrderById(orderId);
+    if (!order) return null;
+    order.status = newStatus;
+    saveDB();
+    return order;
   }
 };

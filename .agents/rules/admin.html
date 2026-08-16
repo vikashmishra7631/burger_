@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bistro & Stack — Store Admin & Orders Management</title>
+
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fff7ed',
+              500: '#ea580c',
+              600: '#c2410c',
+              dark: '#1c1917',
+              accent: '#d97706'
+            },
+            surface: {
+              cream: '#faf9f6',
+              card: '#ffffff',
+              border: '#e7e5e4',
+              muted: '#78716c'
+            }
+          },
+          fontFamily: {
+            heading: ['Outfit', 'sans-serif'],
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    * {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    body {
+      background-color: #f5f4f0;
+      color: #1c1917;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .clean-card {
+      background: #ffffff;
+      border: 1px solid rgba(231, 229, 228, 0.9);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+  </style>
+</head>
+<body class="min-h-screen pb-16">
+
+  <!-- Top Navigation Bar -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-surface-border px-6 py-4 shadow-sm">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-brand-500 text-white flex items-center justify-center shadow-md">
+          <i data-lucide="shield" class="w-5 h-5 fill-white"></i>
+        </div>
+        <div>
+          <h1 class="font-heading font-extrabold text-xl tracking-tight text-brand-dark flex items-center gap-2">
+            Bistro<span class="text-brand-500">&</span>Stack
+            <span class="bg-brand-dark text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded-full tracking-wider">Store Admin</span>
+          </h1>
+          <p class="text-xs text-stone-500">Live Kitchen Queue &amp; Order Details</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 bg-stone-100 px-3 py-1.5 rounded-xl border border-stone-200 text-xs">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+          <span class="text-stone-600 font-medium" id="sync-status">Live Connected</span>
+        </div>
+
+        <button 
+          onclick="fetchOrders()" 
+          class="flex items-center gap-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold px-3.5 py-2 rounded-xl border border-stone-200 transition"
+          title="Refresh Orders"
+        >
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+          <span>Refresh</span>
+        </button>
+
+        <a 
+          href="/" 
+          class="flex items-center gap-1.5 bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-md transition"
+        >
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          <span>Storefront</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-6 pt-8 space-y-6">
+
+    <!-- KPI Metric Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      
+      <div class="clean-card p-5 rounded-3xl shadow-sm">
+        <div class="flex items-center justify-between text-stone-400 mb-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-stone-500">Total Orders</span>
+          <i data-lucide="shopping-bag" class="w-5 h-5 text-brand-500"></i>
+        </div>
+        <div class="font-heading text-3xl font-extrabold text-brand-dark" id="metric-total-orders">0</div>
+        <p class="text-[11px] text-emerald-600 font-medium mt-1">Live customer orders</p>
+      </div>
+
+      <div class="clean-card p-5 rounded-3xl shadow-sm">
+        <div class="flex items-center justify-between text-stone-400 mb-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-stone-500">Gross Revenue</span>
+          <i data-lucide="dollar-sign" class="w-5 h-5 text-emerald-600"></i>
+        </div>
+        <div class="font-heading text-3xl font-extrabold text-brand-dark" id="metric-total-revenue">$0.00</div>
+        <p class="text-[11px] text-stone-500 font-medium mt-1">Includes items &amp; tips</p>
+      </div>
+
+      <div class="clean-card p-5 rounded-3xl shadow-sm">
+        <div class="flex items-center justify-between text-stone-400 mb-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-stone-500">In Kitchen Grill</span>
+          <i data-lucide="flame" class="w-5 h-5 text-brand-500 animate-pulse"></i>
+        </div>
+        <div class="font-heading text-3xl font-extrabold text-brand-500" id="metric-in-kitchen">0</div>
+        <p class="text-[11px] text-stone-500 font-medium mt-1">Preparing &amp; in oven</p>
+      </div>
+
+      <div class="clean-card p-5 rounded-3xl shadow-sm">
+        <div class="flex items-center justify-between text-stone-400 mb-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-stone-500">Courier Dispatched</span>
+          <i data-lucide="bike" class="w-5 h-5 text-brand-accent"></i>
+        </div>
+        <div class="font-heading text-3xl font-extrabold text-stone-800" id="metric-in-transit">0</div>
+        <p class="text-[11px] text-stone-500 font-medium mt-1">Out for delivery via E-Bike</p>
+      </div>
+
+    </div>
+
+    <!-- Filter & Search Controls -->
+    <div class="clean-card p-4 rounded-2xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+      
+      <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto text-xs font-semibold">
+        <span>Status:</span>
+        <button onclick="filterStatus('ALL')" class="status-filter-btn active px-3 py-1.5 rounded-xl bg-brand-dark text-white shadow-sm" data-status="ALL">All Orders</button>
+        <button onclick="filterStatus('PREPARING')" class="status-filter-btn px-3 py-1.5 rounded-xl bg-stone-100 text-stone-600 hover:bg-stone-200" data-status="PREPARING">🔥 Preparing</button>
+        <button onclick="filterStatus('IN_TRANSIT')" class="status-filter-btn px-3 py-1.5 rounded-xl bg-stone-100 text-stone-600 hover:bg-stone-200" data-status="IN_TRANSIT">🚴 In Transit</button>
+        <button onclick="filterStatus('DELIVERED')" class="status-filter-btn px-3 py-1.5 rounded-xl bg-stone-100 text-stone-600 hover:bg-stone-200" data-status="DELIVERED">✅ Delivered</button>
+      </div>
+
+      <div class="relative w-full md:w-72">
+        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"></i>
+        <input 
+          type="text" 
+          id="admin-search-input" 
+          placeholder="Search by Order ID, name, address, phone..." 
+          oninput="handleSearch(this.value)"
+          class="w-full bg-stone-50 border border-stone-200 rounded-xl pl-9 pr-4 py-2 text-xs text-brand-dark focus:outline-none focus:border-brand-500"
+        />
+      </div>
+
+    </div>
+
+    <!-- Orders List Container -->
+    <div class="space-y-4" id="orders-list-container">
+      <div class="p-12 text-center text-stone-400">
+        <div class="w-12 h-12 rounded-full border-4 border-stone-200 border-t-brand-500 animate-spin mx-auto mb-3"></div>
+        <p class="text-xs font-medium">Loading orders from database...</p>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const API_BASE = window.location.origin.includes('localhost') ? window.location.origin : 'http://localhost:5000';
+    let allOrders = [];
+    let currentFilter = 'ALL';
+    let searchQuery = '';
+
+    window.addEventListener('DOMContentLoaded', () => {
+      fetchOrders();
+      lucide.createIcons();
+      // Auto refresh every 8 seconds
+      setInterval(fetchOrders, 8000);
+    });
+
+    async function fetchOrders() {
+      try {
+        const res = await fetch(`${API_BASE}/api/orders`);
+        const json = await res.json();
+        
+        if (json.success && Array.isArray(json.data)) {
+          allOrders = json.data;
+          updateMetrics();
+          renderOrders();
+          document.getElementById('sync-status').textContent = `Updated: ${new Date().toLocaleTimeString()}`;
+        }
+      } catch (err) {
+        console.error('Failed to fetch orders:', err);
+        document.getElementById('sync-status').textContent = 'Sync Offline';
+      }
+    }
+
+    function updateMetrics() {
+      const totalCount = allOrders.length;
+      const totalRev = allOrders.reduce((sum, o) => sum + (o.pricing?.grandTotal || o.grandTotal || 0), 0);
+      const inKitchenCount = allOrders.filter(o => o.status === 'PREPARING' || o.status === 'RECEIVED').length;
+      const inTransitCount = allOrders.filter(o => o.status === 'IN_TRANSIT').length;
+
+      document.getElementById('metric-total-orders').textContent = totalCount;
+      document.getElementById('metric-total-revenue').textContent = `$${totalRev.toFixed(2)}`;
+      document.getElementById('metric-in-kitchen').textContent = inKitchenCount;
+      document.getElementById('metric-in-transit').textContent = inTransitCount;
+    }
+
+    function filterStatus(status) {
+      currentFilter = status;
+      document.querySelectorAll('.status-filter-btn').forEach(btn => {
+        if (btn.dataset.status === status) {
+          btn.className = 'status-filter-btn active px-3 py-1.5 rounded-xl bg-brand-dark text-white shadow-sm';
+        } else {
+          btn.className = 'status-filter-btn px-3 py-1.5 rounded-xl bg-stone-100 text-stone-600 hover:bg-stone-200';
+        }
+      });
+      renderOrders();
+    }
+
+    function handleSearch(val) {
+      searchQuery = val.toLowerCase().trim();
+      renderOrders();
+    }
+
+    function renderOrders() {
+      const container = document.getElementById('orders-list-container');
+      
+      let filtered = allOrders.filter(o => {
+        const matchesStatus = currentFilter === 'ALL' || o.status === currentFilter;
+        const matchesSearch = !searchQuery || 
+          o.orderId.toLowerCase().includes(searchQuery) ||
+          (o.customer?.name && o.customer.name.toLowerCase().includes(searchQuery)) ||
+          (o.customer?.phone && o.customer.phone.toLowerCase().includes(searchQuery)) ||
+          (o.customer?.address && o.customer.address.toLowerCase().includes(searchQuery));
+        return matchesStatus && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="clean-card p-12 text-center text-stone-400 rounded-3xl">
+            <i data-lucide="inbox" class="w-12 h-12 mx-auto mb-2 text-stone-300"></i>
+            <h3 class="font-heading font-bold text-base text-brand-dark">No Orders Found</h3>
+            <p class="text-xs text-stone-500 mt-1">There are no orders matching the current filter criteria.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = filtered.map(order => {
+        const createdDate = new Date(order.createdAt).toLocaleString();
+        const paymentMethod = order.customer?.paymentMethod || 'card';
+        
+        let statusBadgeClass = 'bg-amber-100 text-amber-800 border-amber-200';
+        let statusText = '🔥 Preparing in Kitchen';
+        if (order.status === 'IN_TRANSIT') {
+          statusBadgeClass = 'bg-blue-100 text-blue-800 border-blue-200';
+          statusText = '🚴 Out for Delivery (Marcus)';
+        } else if (order.status === 'DELIVERED') {
+          statusBadgeClass = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+          statusText = '✅ Delivered to Patron';
+        }
+
+        let paymentBadge = `<span class="bg-purple-100 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded-md">💳 Credit Card</span>`;
+        if (paymentMethod === 'apple') {
+          paymentBadge = `<span class="bg-stone-900 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">⚡ Apple Pay</span>`;
+        } else if (paymentMethod === 'cash') {
+          paymentBadge = `<span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-md">💵 Cash on Delivery</span>`;
+        }
+
+        const itemsList = (order.items || []).map(i => `
+          <div class="flex items-center justify-between py-1 border-b border-stone-100 last:border-none text-xs">
+            <div class="flex items-center gap-2">
+              <span class="w-5 h-5 rounded-md bg-stone-100 text-stone-700 font-bold flex items-center justify-center text-[10px]">${i.qty}x</span>
+              <span class="font-medium text-brand-dark">${i.name}</span>
+              ${i.notes ? `<span class="text-[10px] text-stone-400 italic">(${i.notes})</span>` : ''}
+            </div>
+            <span class="font-semibold text-stone-700">$${(i.price * i.qty).toFixed(2)}</span>
+          </div>
+        `).join('');
+
+        return `
+          <div class="clean-card rounded-3xl p-6 shadow-sm border border-surface-border">
+            
+            <!-- Order Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-surface-border pb-4 mb-4">
+              <div>
+                <div class="flex items-center gap-3">
+                  <h3 class="font-heading font-extrabold text-lg text-brand-dark">${order.orderId}</h3>
+                  <span class="border text-[11px] font-bold px-2.5 py-1 rounded-full ${statusBadgeClass}">
+                    ${statusText}
+                  </span>
+                  ${paymentBadge}
+                </div>
+                <div class="text-[11px] text-stone-400 mt-1 flex items-center gap-2">
+                  <span><i data-lucide="clock" class="w-3 h-3 inline mr-1"></i>${createdDate}</span>
+                </div>
+              </div>
+
+              <!-- Live Status Action Buttons -->
+              <div class="flex items-center gap-1.5">
+                <button 
+                  onclick="updateStatus('${order.orderId}', 'PREPARING')" 
+                  class="px-2.5 py-1.5 text-xs font-semibold rounded-xl ${order.status === 'PREPARING' ? 'bg-amber-500 text-white font-bold' : 'bg-stone-100 hover:bg-stone-200 text-stone-600'}"
+                >
+                  🔥 Cooking
+                </button>
+                <button 
+                  onclick="updateStatus('${order.orderId}', 'IN_TRANSIT')" 
+                  class="px-2.5 py-1.5 text-xs font-semibold rounded-xl ${order.status === 'IN_TRANSIT' ? 'bg-blue-600 text-white font-bold' : 'bg-stone-100 hover:bg-stone-200 text-stone-600'}"
+                >
+                  🚴 Transit
+                </button>
+                <button 
+                  onclick="updateStatus('${order.orderId}', 'DELIVERED')" 
+                  class="px-2.5 py-1.5 text-xs font-semibold rounded-xl ${order.status === 'DELIVERED' ? 'bg-emerald-600 text-white font-bold' : 'bg-stone-100 hover:bg-stone-200 text-stone-600'}"
+                >
+                  ✓ Delivered
+                </button>
+              </div>
+            </div>
+
+            <!-- Order Grid: Customer & Items -->
+            <div class="grid md:grid-cols-12 gap-6">
+              
+              <!-- Customer Info -->
+              <div class="md:col-span-5 bg-stone-50 p-4 rounded-2xl border border-stone-200 space-y-2 text-xs">
+                <div class="font-bold text-brand-dark flex items-center gap-1.5 text-xs">
+                  <i data-lucide="user" class="w-4 h-4 text-brand-500"></i>
+                  <span>${order.customer?.name || 'Customer'}</span>
+                </div>
+                <div class="text-stone-600 flex items-start gap-1.5">
+                  <i data-lucide="map-pin" class="w-4 h-4 text-stone-400 shrink-0 mt-0.5"></i>
+                  <span>${order.customer?.address || 'Standard Delivery'}</span>
+                </div>
+                <div class="text-stone-600 flex items-center gap-1.5">
+                  <i data-lucide="phone" class="w-4 h-4 text-stone-400"></i>
+                  <a href="tel:${order.customer?.phone}" class="hover:text-brand-500 font-mono">${order.customer?.phone || 'N/A'}</a>
+                </div>
+                <div class="text-stone-500 flex items-center gap-1.5 pt-1 border-t border-stone-200 text-[11px]">
+                  <i data-lucide="bike" class="w-3.5 h-3.5 text-brand-accent"></i>
+                  <span>Courier: <strong>${order.courier?.name || 'Marcus B.'}</strong></span>
+                </div>
+              </div>
+
+              <!-- Order Items & Pricing -->
+              <div class="md:col-span-7 flex flex-col justify-between space-y-3">
+                <div class="bg-white p-3.5 rounded-2xl border border-stone-200 space-y-1">
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-stone-400 block mb-1">Ordered Dishes</span>
+                  ${itemsList}
+                </div>
+
+                <!-- Financial Summary Bar -->
+                <div class="flex items-center justify-between text-xs bg-stone-50 px-4 py-2 rounded-xl border border-stone-200">
+                  <div class="flex gap-4 text-stone-500 text-[11px]">
+                    <span>Subtotal: $${(order.pricing?.subtotal || order.subtotal || 0).toFixed(2)}</span>
+                    <span>Tip: $${(order.pricing?.tip || order.tip || 0).toFixed(2)}</span>
+                  </div>
+                  <div class="text-right">
+                    <span class="text-[10px] text-stone-400 uppercase font-bold mr-1">Grand Total:</span>
+                    <span class="font-heading font-extrabold text-base text-brand-500">$${(order.pricing?.grandTotal || order.grandTotal || 0).toFixed(2)}</span>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    async function updateStatus(orderId, newStatus) {
+      try {
+        const res = await fetch(`${API_BASE}/api/orders/${orderId}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+        const json = await res.json();
+        if (json.success) {
+          fetchOrders();
+        }
+      } catch (err) {
+        console.error('Error updating order status:', err);
+      }
+    }
+  </script>
+</body>
+</html>

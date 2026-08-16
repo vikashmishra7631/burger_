@@ -140,11 +140,43 @@ router.get('/:orderId/track', (req, res, next) => {
 // GET /api/orders — List recent orders
 router.get('/', (req, res, next) => {
   try {
-    const recent = db.getRecentOrders(20);
+    const recent = db.getRecentOrders(50);
     return res.json({
       success: true,
       count: recent.length,
       data: recent
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// PATCH /api/orders/:orderId/status — Update order state from Admin dashboard
+router.patch('/:orderId/status', (req, res, next) => {
+  try {
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    const validStatuses = ['RECEIVED', 'PREPARING', 'IN_TRANSIT', 'DELIVERED', 'CANCELLED'];
+    if (!status || !validStatuses.includes(status.toUpperCase())) {
+      return res.status(400).json({
+        success: false,
+        error: `Invalid status. Must be one of: ${validStatuses.join(', ')}`
+      });
+    }
+
+    const updated = db.updateOrderStatus(orderId, status.toUpperCase());
+    if (!updated) {
+      return res.status(404).json({
+        success: false,
+        error: `Order with ID "${orderId}" was not found.`
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: `Order #${orderId} status updated to ${status.toUpperCase()}`,
+      data: updated
     });
   } catch (err) {
     next(err);
