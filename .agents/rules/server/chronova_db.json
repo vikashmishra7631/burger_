@@ -240,6 +240,74 @@
   },
   "orders": [
     {
+      "orderId": "ORD-454504",
+      "createdAt": "2026-08-16T07:38:43.243Z",
+      "customer": {
+        "name": "Alex Mercer",
+        "address": "742 Evergreen Terrace, Apt 4B",
+        "phone": "(555) 382-9012",
+        "paymentMethod": "card"
+      },
+      "items": [
+        {
+          "id": "hero_1786865920565",
+          "name": "Inferno Double Angus",
+          "price": 13.99,
+          "qty": 1,
+          "notes": "Double 1/3 lb Angus, Smoked Gouda, charred jalapeño crisps & house brisket jam on toasted brioche."
+        }
+      ],
+      "pricing": {
+        "subtotal": 13.99,
+        "discount": 0,
+        "deliveryFee": 2.99,
+        "tax": 1.12,
+        "tip": 3.5,
+        "grandTotal": 21.6
+      },
+      "status": "DELIVERED",
+      "courier": {
+        "name": "Marcus B. (E-Bike)",
+        "etaMinutes": 18,
+        "lat": 40.7128,
+        "lng": -74.006
+      }
+    },
+    {
+      "orderId": "ORD-552759",
+      "createdAt": "2026-08-16T07:36:45.491Z",
+      "customer": {
+        "name": "Alex Mercer",
+        "address": "742 Evergreen Terrace, Apt 4B",
+        "phone": "(555) 382-9012",
+        "paymentMethod": "card"
+      },
+      "items": [
+        {
+          "id": "hero_1786865801961",
+          "name": "Inferno Double Angus",
+          "price": 13.99,
+          "qty": 1,
+          "notes": "Double 1/3 lb Angus, Smoked Gouda, charred jalapeño crisps & house brisket jam on toasted brioche."
+        }
+      ],
+      "pricing": {
+        "subtotal": 13.99,
+        "discount": 0,
+        "deliveryFee": 2.99,
+        "tax": 1.12,
+        "tip": 3.5,
+        "grandTotal": 21.6
+      },
+      "status": "DELIVERED",
+      "courier": {
+        "name": "Marcus B. (E-Bike)",
+        "etaMinutes": 18,
+        "lat": 40.7128,
+        "lng": -74.006
+      }
+    },
+    {
       "orderId": "ORD-178458",
       "createdAt": "2026-08-16T06:47:18.444Z",
       "customer": {
@@ -272,7 +340,7 @@
         "tip": 3.5,
         "grandTotal": 35.88
       },
-      "status": "PREPARING",
+      "status": "DELIVERED",
       "courier": {
         "name": "Marcus B. (E-Bike)",
         "etaMinutes": 18,

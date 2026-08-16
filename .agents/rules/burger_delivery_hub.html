@@ -826,56 +826,38 @@
       <div class="relative h-44 rounded-2xl bg-stone-100 border border-stone-200 overflow-hidden flex items-center justify-center">
         <div class="absolute inset-0 opacity-40 bg-[radial-gradient(#ea580c_1px,transparent_1px)] [background-size:16px_16px]"></div>
         
-        <div class="absolute w-3/4 h-[2px] bg-gradient-to-r from-brand-500 via-brand-accent to-emerald-500"></div>
+        <div class="absolute w-3/4 h-[3px] bg-gradient-to-r from-brand-500 via-brand-accent to-emerald-500 rounded-full"></div>
 
-        <div class="absolute left-8 flex flex-col items-center gap-1">
+        <div class="absolute left-6 flex flex-col items-center gap-1">
           <div class="w-8 h-8 rounded-full bg-brand-500 text-white flex items-center justify-center shadow-md">
             <i data-lucide="flame" class="w-4 h-4 fill-white"></i>
           </div>
           <span class="text-[10px] font-semibold text-stone-600">Kitchen</span>
         </div>
 
-        <div class="absolute left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 animate-bounce">
-          <div class="w-9 h-9 rounded-full bg-brand-dark text-white flex items-center justify-center shadow-lg">
+        <div id="tracker-courier-marker" class="absolute left-[35%] -translate-x-1/2 flex flex-col items-center gap-1 transition-all duration-700 ease-out">
+          <div class="w-9 h-9 rounded-full bg-brand-dark text-white flex items-center justify-center shadow-lg animate-bounce">
             <i data-lucide="bike" class="w-5 h-5 text-white"></i>
           </div>
-          <span class="text-[10px] font-bold text-brand-dark bg-white px-2 py-0.5 rounded-md border border-stone-200 shadow-sm">Marcus B. (E-Bike)</span>
+          <span id="tracker-courier-label" class="text-[10px] font-bold text-brand-dark bg-white px-2 py-0.5 rounded-md border border-stone-200 shadow-sm whitespace-nowrap">
+            Marcus B. (E-Bike)
+          </span>
         </div>
 
-        <div class="absolute right-8 flex flex-col items-center gap-1">
+        <div class="absolute right-6 flex flex-col items-center gap-1">
           <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-md">
             <i data-lucide="home" class="w-4 h-4"></i>
           </div>
           <span class="text-[10px] font-semibold text-stone-600">Your Door</span>
         </div>
 
-        <div class="absolute top-2.5 right-3 bg-white text-brand-600 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-stone-200 shadow-sm">
+        <div id="tracker-eta-badge" class="absolute top-2.5 right-3 bg-white text-brand-600 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-stone-200 shadow-sm">
           ⚡ ETA: 14 Mins
         </div>
       </div>
 
-      <div class="space-y-3 pt-2">
-        <div class="flex items-center gap-3">
-          <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">✓</div>
-          <div class="flex-1">
-            <div class="text-xs font-bold text-brand-dark">Order Received &amp; Queued</div>
-            <div class="text-[11px] text-stone-500">11:45 AM</div>
-          </div>
-        </div>
-        <div class="flex items-center gap-3">
-          <div class="w-7 h-7 rounded-full bg-brand-500 text-white flex items-center justify-center text-xs font-bold animate-pulse">🔥</div>
-          <div class="flex-1">
-            <div class="text-xs font-bold text-brand-500" id="kitchen-tracker-status">In the Kitchen Oven</div>
-            <div class="text-[11px] text-stone-500">Piping hot artisanal preparation</div>
-          </div>
-        </div>
-        <div class="flex items-center gap-3 opacity-60">
-          <div class="w-7 h-7 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center text-xs font-bold">3</div>
-          <div class="flex-1">
-            <div class="text-xs font-semibold text-stone-600">Courier Pickup &amp; Transit</div>
-            <div class="text-[11px] text-stone-400">Thermal insulated carrier</div>
-          </div>
-        </div>
+      <!-- Dynamic Synchronized Stages -->
+      <div id="tracker-stages-container" class="space-y-3 pt-2">
       </div>
 
       <div class="pt-2">
@@ -2077,14 +2059,14 @@
       document.getElementById('tracker-modal').classList.add('flex');
       document.getElementById('order-id-label').textContent = `Order #${idToTrack} • Synchronized with Kitchen`;
 
-      // Fetch live order tracking from backend
+      // Fetch live order tracking from backend immediately
       await syncTrackerFromBackend(idToTrack);
 
-      // Poll every 10 seconds for live updates
+      // Poll every 3 seconds for near real-time synchronization with Admin actions
       if (trackerPollInterval) clearInterval(trackerPollInterval);
       trackerPollInterval = setInterval(() => {
         syncTrackerFromBackend(idToTrack);
-      }, 10000);
+      }, 3000);
     }
 
     async function syncTrackerFromBackend(orderId) {
@@ -2092,19 +2074,104 @@
         const res = await fetch(`${API_BASE_URL}/api/orders/${orderId}/track`);
         const json = await res.json();
         if (json.success && json.data) {
-          const { stageTitle, stageDescription, etaMinutes, courier } = json.data;
-          const kitchenStatusEl = document.getElementById('kitchen-tracker-status');
-          if (kitchenStatusEl) {
-            kitchenStatusEl.textContent = stageTitle;
-            kitchenStatusEl.nextElementSibling.textContent = stageDescription;
-          }
-          const etaBadge = document.querySelector('#tracker-modal .border-stone-200.shadow-sm.text-brand-600');
+          const { currentStage, stageTitle, stageDescription, etaMinutes, courier } = json.data;
+          
+          // 1. Update ETA badge
+          const etaBadge = document.getElementById('tracker-eta-badge');
           if (etaBadge) {
-            etaBadge.textContent = `⚡ ETA: ${etaMinutes} Mins`;
+            if (currentStage >= 4) {
+              etaBadge.className = 'absolute top-2.5 right-3 bg-emerald-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-lg shadow-sm';
+              etaBadge.textContent = '🎉 Delivered!';
+            } else {
+              etaBadge.className = 'absolute top-2.5 right-3 bg-white text-brand-600 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-stone-200 shadow-sm';
+              etaBadge.textContent = `⚡ ETA: ${etaMinutes} Mins`;
+            }
+          }
+
+          // 2. Update Courier Marker on the Track Bar
+          const courierMarker = document.getElementById('tracker-courier-marker');
+          const courierLabel = document.getElementById('tracker-courier-label');
+          if (courierMarker && courier) {
+            courierMarker.style.left = `${courier.positionPercent || 35}%`;
+          }
+          if (courierLabel && courier) {
+            courierLabel.textContent = `${courier.name} (${courier.currentLocation})`;
+          }
+
+          // 3. Render the 4 Synchronized Stages
+          const stagesContainer = document.getElementById('tracker-stages-container');
+          if (stagesContainer) {
+            const stages = [
+              {
+                step: 1,
+                title: 'Order Received & Queued in Kitchen',
+                desc: 'Kitchen accepted order • Payment confirmed',
+                icon: 'check'
+              },
+              {
+                step: 2,
+                title: 'On the Charcoal Grill & Wood-Fired Oven',
+                desc: 'Chefs are searing and baking your meal',
+                icon: 'flame'
+              },
+              {
+                step: 3,
+                title: 'Courier En Route with Thermal Carrier',
+                desc: `${courier?.name || 'Marcus B.'} (E-Bike) • ${courier?.currentLocation || 'In Transit'}`,
+                icon: 'bike'
+              },
+              {
+                step: 4,
+                title: 'Delivered Fresh & Hot to Your Door',
+                desc: 'Arrived at your doorstep! Enjoy your meal!',
+                icon: 'home'
+              }
+            ];
+
+            stagesContainer.innerHTML = stages.map(s => {
+              const isCompleted = currentStage > s.step;
+              const isCurrent = currentStage === s.step;
+              
+              let iconBadge = '';
+              let titleClass = 'text-stone-400 font-medium';
+              let descClass = 'text-stone-400';
+              let rowOpacity = 'opacity-40';
+
+              if (isCompleted) {
+                iconBadge = `<div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold shrink-0">✓</div>`;
+                titleClass = 'text-brand-dark font-bold';
+                descClass = 'text-emerald-700 font-medium';
+                rowOpacity = 'opacity-100';
+              } else if (isCurrent) {
+                iconBadge = `<div class="w-7 h-7 rounded-full bg-brand-500 text-white flex items-center justify-center text-xs font-bold animate-pulse shrink-0">
+                  <i data-lucide="${s.icon}" class="w-3.5 h-3.5"></i>
+                </div>`;
+                titleClass = 'text-brand-500 font-bold';
+                descClass = 'text-brand-600 font-medium';
+                rowOpacity = 'opacity-100';
+              } else {
+                iconBadge = `<div class="w-7 h-7 rounded-full bg-stone-200 text-stone-500 flex items-center justify-center text-xs font-semibold shrink-0">${s.step}</div>`;
+              }
+
+              return `
+                <div class="flex items-center gap-3 ${rowOpacity} transition-all duration-300">
+                  ${iconBadge}
+                  <div class="flex-1 min-w-0">
+                    <div class="text-xs ${titleClass} flex items-center gap-1.5">
+                      <span>${s.title}</span>
+                      ${isCurrent ? '<span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-ping inline-block"></span>' : ''}
+                    </div>
+                    <div class="text-[11px] ${descClass}">${s.desc}</div>
+                  </div>
+                </div>
+              `;
+            }).join('');
+
+            lucide.createIcons();
           }
         }
       } catch (e) {
-        // Keep offline preview
+        console.error('Tracker sync error:', e);
       }
     }
 

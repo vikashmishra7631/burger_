@@ -78,7 +78,7 @@ router.post('/', orderPlacementLimiter, (req, res, next) => {
   }
 });
 
-// GET /api/orders/:orderId/track — Live order status tracking with dynamic timeline progression
+// GET /api/orders/:orderId/track — Live order status tracking synchronized with Admin actions
 router.get('/:orderId/track', (req, res, next) => {
   try {
     const { orderId } = req.params;
@@ -91,26 +91,35 @@ router.get('/:orderId/track', (req, res, next) => {
       });
     }
 
-    // Dynamic elapsed time tracking simulation
-    const elapsedMinutes = Math.floor((Date.now() - new Date(order.createdAt).getTime()) / 60000);
+    const status = (order.status || 'RECEIVED').toUpperCase();
     let stage = 1;
     let statusTitle = 'Order Received & Queued';
     let statusDesc = 'Kitchen has accepted your order';
-    let etaMinutes = Math.max(2, 22 - elapsedMinutes);
+    let etaMinutes = 22;
+    let courierLocation = 'At Kitchen';
+    let courierPositionPercent = 15; // percentage on delivery track
 
-    if (elapsedMinutes >= 1 && elapsedMinutes < 8) {
+    if (status === 'PREPARING') {
       stage = 2;
       statusTitle = 'On the Charcoal Grill & Wood-Fired Oven';
       statusDesc = 'Chefs are searing and baking your meal';
-    } else if (elapsedMinutes >= 8 && elapsedMinutes < 18) {
+      etaMinutes = 14;
+      courierLocation = 'Waiting at Kitchen';
+      courierPositionPercent = 40;
+    } else if (status === 'IN_TRANSIT') {
       stage = 3;
-      statusTitle = 'Courier En Route';
-      statusDesc = 'Marcus B. (E-Bike) is delivering with thermal carrier';
-    } else if (elapsedMinutes >= 18) {
+      statusTitle = 'Courier En Route with Thermal Carrier';
+      statusDesc = 'Marcus B. (Express E-Bike) is delivering to your address';
+      etaMinutes = 6;
+      courierLocation = '0.3 miles away (Arriving Soon)';
+      courierPositionPercent = 70;
+    } else if (status === 'DELIVERED') {
       stage = 4;
-      statusTitle = 'Delivered Fresh & Hot';
+      statusTitle = 'Delivered Fresh & Hot! 🎉';
       statusDesc = 'Arrived at your doorstep! Enjoy your meal!';
       etaMinutes = 0;
+      courierLocation = 'At Your Doorstep';
+      courierPositionPercent = 90;
     }
 
     return res.json({
@@ -118,7 +127,8 @@ router.get('/:orderId/track', (req, res, next) => {
       data: {
         orderId: order.orderId,
         createdAt: order.createdAt,
-        currentStage: stage, // 1 to 4
+        status: order.status,
+        currentStage: stage,
         stageTitle: statusTitle,
         stageDescription: statusDesc,
         etaMinutes,
@@ -126,9 +136,10 @@ router.get('/:orderId/track', (req, res, next) => {
         items: order.items,
         pricing: order.pricing,
         courier: {
-          name: order.courier.name,
+          name: order.courier?.name || 'Marcus B.',
           vehicle: 'Express E-Bike',
-          currentLocation: stage >= 3 ? '0.4 miles away' : 'At Kitchen'
+          currentLocation: courierLocation,
+          positionPercent: courierPositionPercent
         }
       }
     });
