@@ -741,22 +741,59 @@
 
         <div>
           <label class="block text-stone-700 font-semibold mb-2">Payment Method</label>
-          <div class="grid grid-cols-3 gap-2">
-            <label class="flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-brand-500 bg-brand-50 cursor-pointer text-center">
-              <input type="radio" name="payment" value="card" checked class="hidden" />
+          <div class="grid grid-cols-3 gap-2" id="payment-methods-grid">
+            <button 
+              type="button"
+              id="pay-btn-card" 
+              onclick="selectPaymentMethod('card')" 
+              class="payment-method-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-brand-500 bg-brand-50 ring-1 ring-brand-500 shadow-sm transition-all"
+            >
               <i data-lucide="credit-card" class="w-4 h-4 text-brand-600"></i>
-              <span class="text-[11px] font-semibold text-brand-dark">Credit Card</span>
-            </label>
-            <label class="flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-stone-200 bg-stone-50 cursor-pointer text-center hover:border-stone-300 transition">
-              <input type="radio" name="payment" value="apple" class="hidden" />
+              <span class="text-[11px] font-bold text-brand-dark">Credit Card</span>
+            </button>
+
+            <button 
+              type="button"
+              id="pay-btn-apple" 
+              onclick="selectPaymentMethod('apple')" 
+              class="payment-method-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-stone-200 bg-stone-50 hover:border-stone-300 transition-all"
+            >
               <i data-lucide="smartphone" class="w-4 h-4 text-stone-600"></i>
-              <span class="text-[11px] font-semibold text-brand-dark">Apple Pay</span>
-            </label>
-            <label class="flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-stone-200 bg-stone-50 cursor-pointer text-center hover:border-stone-300 transition">
-              <input type="radio" name="payment" value="cash" class="hidden" />
+              <span class="text-[11px] font-semibold text-stone-700">Apple Pay</span>
+            </button>
+
+            <button 
+              type="button"
+              id="pay-btn-cash" 
+              onclick="selectPaymentMethod('cash')" 
+              class="payment-method-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-stone-200 bg-stone-50 hover:border-stone-300 transition-all"
+            >
               <i data-lucide="banknote" class="w-4 h-4 text-stone-600"></i>
-              <span class="text-[11px] font-semibold text-brand-dark">Cash</span>
-            </label>
+              <span class="text-[11px] font-semibold text-stone-700">Cash</span>
+            </button>
+          </div>
+          <input type="hidden" name="payment" id="selected-payment-input" value="card" />
+
+          <!-- Dynamic payment info box -->
+          <div id="payment-details-box" class="mt-3 p-3 bg-stone-50 rounded-xl border border-stone-200 text-xs">
+            <div id="card-fields-wrapper" class="space-y-2">
+              <div class="relative">
+                <input type="text" placeholder="Card number: 4242 •••• •••• 4242" value="•••• •••• •••• 8842" class="w-full bg-white border border-stone-200 rounded-lg px-3 py-1.5 text-xs text-brand-dark focus:outline-none focus:border-brand-500" />
+                <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-stone-400">VISA / MC</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <input type="text" placeholder="MM/YY" value="08/28" class="bg-white border border-stone-200 rounded-lg px-3 py-1.5 text-xs text-brand-dark focus:outline-none focus:border-brand-500" />
+                <input type="password" placeholder="CVV" value="•••" class="bg-white border border-stone-200 rounded-lg px-3 py-1.5 text-xs text-brand-dark focus:outline-none focus:border-brand-500" />
+              </div>
+            </div>
+            <div id="apple-fields-wrapper" class="hidden text-center py-2 text-stone-600">
+              <span class="font-semibold block text-brand-dark">⚡ Apple Pay Express</span>
+              <span class="text-[11px] text-stone-500">Authenticate with Touch ID / Face ID upon placing order</span>
+            </div>
+            <div id="cash-fields-wrapper" class="hidden text-center py-2 text-stone-600">
+              <span class="font-semibold block text-brand-dark">💵 Cash on Delivery</span>
+              <span class="text-[11px] text-stone-500">Pay courier Marcus in cash or card upon arrival</span>
+            </div>
           </div>
         </div>
 
@@ -1914,10 +1951,50 @@
       document.getElementById('customizer-modal').classList.remove('flex');
     }
 
+    function selectPaymentMethod(method) {
+      const input = document.getElementById('selected-payment-input');
+      if (input) input.value = method;
+
+      const btnCard = document.getElementById('pay-btn-card');
+      const btnApple = document.getElementById('pay-btn-apple');
+      const btnCash = document.getElementById('pay-btn-cash');
+
+      const cardBox = document.getElementById('card-fields-wrapper');
+      const appleBox = document.getElementById('apple-fields-wrapper');
+      const cashBox = document.getElementById('cash-fields-wrapper');
+
+      // Reset all buttons to default inactive state
+      [btnCard, btnApple, btnCash].forEach(btn => {
+        if (btn) {
+          btn.className = "payment-method-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-stone-200 bg-stone-50 hover:border-stone-300 transition-all text-stone-600";
+        }
+      });
+
+      // Hide all detail boxes
+      if (cardBox) cardBox.classList.add('hidden');
+      if (appleBox) appleBox.classList.add('hidden');
+      if (cashBox) cashBox.classList.add('hidden');
+
+      // Activate chosen method
+      if (method === 'card') {
+        if (btnCard) btnCard.className = "payment-method-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-brand-500 bg-brand-50 ring-1 ring-brand-500 shadow-sm transition-all text-brand-600 font-bold";
+        if (cardBox) cardBox.classList.remove('hidden');
+      } else if (method === 'apple') {
+        if (btnApple) btnApple.className = "payment-method-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-brand-500 bg-brand-50 ring-1 ring-brand-500 shadow-sm transition-all text-brand-600 font-bold";
+        if (appleBox) appleBox.classList.remove('hidden');
+      } else if (method === 'cash') {
+        if (btnCash) btnCash.className = "payment-method-btn flex flex-col items-center gap-1.5 p-2.5 rounded-xl border border-brand-500 bg-brand-50 ring-1 ring-brand-500 shadow-sm transition-all text-brand-600 font-bold";
+        if (cashBox) cashBox.classList.remove('hidden');
+      }
+
+      lucide.createIcons();
+    }
+
     function openCheckoutModal() {
       if (cart.length === 0) return;
       toggleCartDrawer(false);
       calculateCart();
+      selectPaymentMethod('card'); // default active
       document.getElementById('checkout-modal').classList.remove('hidden');
       document.getElementById('checkout-modal').classList.add('flex');
     }
@@ -1936,7 +2013,7 @@
       const customerName = inputs[0]?.value || 'Alex Mercer';
       const deliveryAddress = inputs[1]?.value || '742 Evergreen Terrace';
       const phone = inputs[2]?.value || '555-382-9012';
-      const paymentMethod = form.querySelector('input[name="payment"]:checked')?.value || 'card';
+      const paymentMethod = document.getElementById('selected-payment-input')?.value || 'card';
       const tip = parseFloat(document.getElementById('tip-select')?.value || '3.50');
 
       const submitBtn = form.querySelector('button[type="submit"]');
