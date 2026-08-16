@@ -317,3 +317,5 @@ export const db = {
     return order;
   }
 };
+
+export default db;

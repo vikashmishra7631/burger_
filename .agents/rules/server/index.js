@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 import menuRoutes from './routes/menu.routes.js';
 import couponRoutes from './routes/coupon.routes.js';
 import orderRoutes from './routes/order.routes.js';
+import aiRoutes from './routes/ai.routes.js';
 import { globalApiLimiter, sanitizeInputs, requestLogger } from './middleware/security.js';
 
 dotenv.config();
@@ -53,6 +54,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/menu', menuRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Serve static frontend files
 app.use(express.static(ROOT_DIR));
