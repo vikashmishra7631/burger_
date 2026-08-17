@@ -15,8 +15,9 @@ from .middleware.security import sanitize_inputs, request_logger
 load_dotenv()
 
 # Determine paths
-SERVER_DIR = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR = os.path.dirname(SERVER_DIR)
+BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.dirname(BACKEND_DIR)
+FRONTEND_DIR = os.path.join(ROOT_DIR, "frontend")
 
 app = Flask(__name__, static_folder=None)
 PORT = int(os.getenv("PORT", 5000))
@@ -51,11 +52,13 @@ def health():
 # Serve static frontend files
 @app.route("/", methods=["GET"])
 def root():
-    return send_from_directory(ROOT_DIR, "burger_delivery_hub.html")
+    return send_from_directory(FRONTEND_DIR, "burger_delivery_hub.html")
 
 @app.route("/<path:filename>", methods=["GET"])
 def static_files(filename):
-    if os.path.exists(os.path.join(ROOT_DIR, filename)):
+    if os.path.exists(os.path.join(FRONTEND_DIR, filename)):
+        return send_from_directory(FRONTEND_DIR, filename)
+    elif os.path.exists(os.path.join(ROOT_DIR, filename)):
         return send_from_directory(ROOT_DIR, filename)
     return jsonify({
         "success": False,
@@ -71,7 +74,7 @@ def not_found(e):
             "error": f'API Endpoint "{request.method} {request.path}" does not exist.'
         }), 404
     # Fallback to root for client-side navigation
-    return send_from_directory(ROOT_DIR, "burger_delivery_hub.html")
+    return send_from_directory(FRONTEND_DIR, "burger_delivery_hub.html")
 
 # Global Error Handler
 @app.errorhandler(500)

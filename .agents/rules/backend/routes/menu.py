@@ -3,7 +3,8 @@ from ..db import get_menu_items
 
 menu_bp = Blueprint('menu', __name__)
 
-@menu_bp.route('/', methods=['GET'])
+@menu_bp.route('/', methods=['GET'], strict_slashes=False)
+@menu_bp.route('', methods=['GET'], strict_slashes=False)
 def get_menu():
     try:
         mode = request.args.get('mode', 'burger')

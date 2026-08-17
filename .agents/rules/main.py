@@ -9,7 +9,7 @@ import os
 # Add project root to sys.path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from server.app import app, PORT
+from backend.app import app, PORT
 
 if __name__ == "__main__":
     print("\n=================================================")

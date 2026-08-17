@@ -1,12 +1,13 @@
 from flask import Blueprint, request, jsonify
 from ..db import get_coupon
+from ..middleware.security import get_sanitized_json
 
 coupon_bp = Blueprint('coupons', __name__)
 
-@coupon_bp.route('/validate', methods=['POST'])
+@coupon_bp.route('/validate', methods=['POST'], strict_slashes=False)
 def validate_coupon():
     try:
-        body = request.get_json(silent=True) or {}
+        body = get_sanitized_json()
         code = body.get('code')
         subtotal = body.get('subtotal', 0)
 

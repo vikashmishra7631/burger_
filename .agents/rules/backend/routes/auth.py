@@ -4,6 +4,7 @@ import base64
 from functools import wraps
 from flask import Blueprint, request, jsonify, g
 from ..db import register_user, login_user, get_user_by_token, update_user_profile
+from ..middleware.security import get_sanitized_json
 
 auth_bp = Blueprint('auth', __name__)
 ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD', 'bistro2026')
@@ -26,7 +27,7 @@ def authenticate_token(f):
 @auth_bp.route('/register', methods=['POST'])
 def register():
     try:
-        body = request.get_json(silent=True) or {}
+        body = get_sanitized_json()
         name = body.get('name')
         email = body.get('email')
         password = body.get('password')
@@ -54,7 +55,7 @@ def register():
 @auth_bp.route('/login', methods=['POST'])
 def login():
     try:
-        body = request.get_json(silent=True) or {}
+        body = get_sanitized_json()
         email = body.get('email')
         password = body.get('password')
 
@@ -90,7 +91,7 @@ def me():
 @authenticate_token
 def profile():
     try:
-        body = request.get_json(silent=True) or {}
+        body = get_sanitized_json()
         name = body.get('name')
         phone = body.get('phone')
         address = body.get('address')
@@ -109,7 +110,7 @@ def profile():
 
 @auth_bp.route('/admin-login', methods=['POST'])
 def admin_login():
-    body = request.get_json(silent=True) or {}
+    body = get_sanitized_json()
     password = body.get('password')
     if not password:
         return jsonify({'success': False, 'error': 'Admin passcode is required.'}), 400

@@ -8,13 +8,14 @@ from ..db import (
     get_user_by_token,
     get_coupon
 )
+from ..middleware.security import get_sanitized_json
 
 order_bp = Blueprint('orders', __name__)
 
 @order_bp.route('', methods=['POST'], strict_slashes=False)
 def place_order():
     try:
-        body = request.get_json(silent=True) or {}
+        body = get_sanitized_json()
         customer_name = body.get('customerName')
         delivery_address = body.get('deliveryAddress')
         phone = body.get('phone')

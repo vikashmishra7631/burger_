@@ -3,6 +3,7 @@ import re
 import requests
 from flask import Blueprint, request, jsonify
 from ..db import get_menu_items
+from ..middleware.security import get_sanitized_json
 
 ai_bp = Blueprint('ai', __name__)
 
@@ -111,10 +112,10 @@ def generate_smart_fallback_response(user_message, burger_menu=None, pizza_menu=
             "- **\"How does the combo meal deal work?\"**\n\n"
             "Or feel free to ask about any specific dish or dietary preference! 🍔🍕")
 
-@ai_bp.route('/chat', methods=['POST'])
+@ai_bp.route('/chat', methods=['POST'], strict_slashes=False)
 def chat():
     try:
-        body = request.get_json(silent=True) or {}
+        body = get_sanitized_json()
         messages = body.get('messages', [])
 
         if not messages or not isinstance(messages, list):

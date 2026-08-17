@@ -1093,6 +1093,39 @@
         "lat": 40.7128,
         "lng": -74.006
       }
+    },
+    {
+      "orderId": "ORD-1461F8F2",
+      "status": "RECEIVED",
+      "createdAt": "2026-08-17T13:05:51.397158+00:00",
+      "userId": null,
+      "customer": {
+        "name": "Python Test User",
+        "address": "123 Python Street",
+        "phone": "(555) 019-2834",
+        "paymentMethod": "card"
+      },
+      "items": [
+        {
+          "id": "b1",
+          "name": "Smash Beast Double",
+          "price": 11.99,
+          "qty": 2,
+          "notes": ""
+        }
+      ],
+      "pricing": {
+        "subtotal": 23.98,
+        "discount": 6.0,
+        "deliveryFee": 2.99,
+        "tax": 1.44,
+        "tip": 3.0,
+        "grandTotal": 25.42
+      },
+      "courier": {
+        "name": "Marcus B.",
+        "vehicle": "Express E-Bike"
+      }
     }
   ],
   "users": [
@@ -1179,6 +1212,17 @@
       "token": "tok_072711d8cc40b2c0a8371ad7552128c87be25595cff849a3",
       "createdAt": "2026-08-17T13:02:03.181Z",
       "role": "customer"
+    },
+    {
+      "userId": "usr_60909785",
+      "name": "Jane Doe",
+      "email": "user_1786971966@example.com",
+      "phone": "555-987-6543",
+      "address": "456 Oak Avenue",
+      "passwordHash": "ef20c6e2c9cf1ca78eb2f94bba461bb8ccede03b9f0a8472395ab5a20b03f328ee1c6116bff2a002c285b07676a86d8558fa68168687cbca25cf0aa669472431",
+      "passwordSalt": "cc9a5b366d2fd344d567a0f9cc9bec2e",
+      "token": "tok_3ab7efa97557578ba0b9f4913dcaca9f4774046d164c587d",
+      "createdAt": "2026-08-17T13:06:08.392318+00:00"
     }
   ]
 }

@@ -9,6 +9,7 @@ import menuRoutes from './routes/menu.routes.js';
 import couponRoutes from './routes/coupon.routes.js';
 import orderRoutes from './routes/order.routes.js';
 import aiRoutes from './routes/ai.routes.js';
+import authRoutes from './routes/auth.routes.js';
 import { globalApiLimiter, sanitizeInputs, requestLogger } from './middleware/security.js';
 
 dotenv.config();
@@ -51,6 +52,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // API Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/menu', menuRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/orders', orderRoutes);

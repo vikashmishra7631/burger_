@@ -17,14 +17,13 @@ def sanitize_value(val):
     return val
 
 def sanitize_inputs():
-    """Before-request hook to sanitize JSON and form payloads."""
-    if request.is_json and request.json:
-        try:
-            cleaned = sanitize_value(request.get_json())
-            # Replace request._cached_json or store on g
-            request._cached_json = cleaned
-        except Exception as e:
-            logger.warning(f"Failed to sanitize JSON payload: {e}")
+    """Before-request hook for request validation and logging."""
+    pass
+
+def get_sanitized_json():
+    """Helper to retrieve cleanly sanitized JSON payload."""
+    data = request.get_json(silent=True) or {}
+    return sanitize_value(data)
 
 def request_logger():
     """Before-request hook to log incoming API calls."""
