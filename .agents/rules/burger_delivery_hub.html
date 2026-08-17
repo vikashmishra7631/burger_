@@ -79,6 +79,7 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
+      box-sizing: border-box;
     }
     
     body {
@@ -86,27 +87,39 @@
       color: #1c1917;
       font-family: 'Plus Jakarta Sans', sans-serif;
       overflow-x: hidden;
+      transition: background-color 0.4s ease, color 0.4s ease;
     }
     
-    ::-webkit-scrollbar {
-      width: 7px;
+    /* Dark mode body */
+    html.dark body {
+      background-color: #0c0a09;
+      color: #e7e5e4;
     }
-    ::-webkit-scrollbar-track {
-      background: #faf9f6;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #d6d3d1;
-      border-radius: 99px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #ea580c;
-    }
+    
+    ::-webkit-scrollbar { width: 7px; }
+    ::-webkit-scrollbar-track { background: #faf9f6; }
+    ::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 99px; }
+    ::-webkit-scrollbar-thumb:hover { background: #ea580c; }
+    html.dark ::-webkit-scrollbar-track { background: #0c0a09; }
+    html.dark ::-webkit-scrollbar-thumb { background: #44403c; }
+
+    /* ── MOBILE UTILITIES ── */
+    /* Hide scrollbar for filter pill rows */
+    .pills-scroll { display:flex; gap:6px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:2px; flex-wrap:nowrap; }
+    .pills-scroll::-webkit-scrollbar { display:none; }
+    /* Prevent ANY horizontal page overflow */
+    html, body { max-width: 100vw; }
 
     .glass-nav {
       background: rgba(250, 249, 246, 0.92);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(231, 229, 228, 0.9);
+      transition: background 0.4s ease, border-color 0.4s ease;
+    }
+    html.dark .glass-nav {
+      background: rgba(12, 10, 9, 0.92);
+      border-bottom-color: rgba(68, 64, 60, 0.6);
     }
 
     .clean-card {
@@ -118,6 +131,110 @@
       border-color: rgba(234, 88, 12, 0.35);
       transform: translateY(-4px);
       box-shadow: 0 20px 35px -5px rgba(28, 25, 23, 0.08), 0 8px 16px -4px rgba(28, 25, 23, 0.04);
+    }
+    html.dark .clean-card {
+      background: #1c1917;
+      border-color: rgba(68, 64, 60, 0.6);
+    }
+    html.dark .clean-card:hover {
+      border-color: rgba(234, 88, 12, 0.5);
+      box-shadow: 0 20px 35px -5px rgba(234, 88, 12, 0.1), 0 8px 16px -4px rgba(0,0,0,0.3);
+    }
+
+    /* Dark mode overrides for common elements */
+    html.dark .bg-white { background-color: #1c1917 !important; }
+    html.dark .bg-stone-50 { background-color: #1c1917 !important; }
+    html.dark .bg-stone-100 { background-color: #292524 !important; }
+    html.dark .bg-surface-cream { background-color: #0c0a09 !important; }
+    html.dark .border-surface-border { border-color: #44403c !important; }
+    html.dark .border-stone-200 { border-color: #44403c !important; }
+    html.dark .text-brand-dark { color: #fafaf9 !important; }
+    html.dark .text-stone-700 { color: #d6d3d1 !important; }
+    html.dark .text-stone-600 { color: #a8a29e !important; }
+    html.dark .text-stone-500 { color: #a8a29e !important; }
+    html.dark .text-stone-400 { color: #78716c !important; }
+    html.dark .bg-brand-50 { background-color: rgba(234, 88, 12, 0.1) !important; }
+    html.dark .bg-brand-dark { background-color: #292524 !important; }
+    html.dark .shadow-soft { box-shadow: 0 4px 20px -2px rgba(0,0,0,0.3) !important; }
+    html.dark .shadow-hover { box-shadow: 0 20px 35px -5px rgba(0,0,0,0.4) !important; }
+    html.dark input, html.dark select {
+      background-color: #292524 !important;
+      border-color: #44403c !important;
+      color: #e7e5e4 !important;
+    }
+    html.dark input::placeholder { color: #78716c !important; }
+
+    /* Dark mode toggle button */
+    .dark-toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #f59e0b, #fb923c);
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 2px solid rgba(245, 158, 11, 0.3);
+    }
+    html.dark .dark-toggle {
+      background: linear-gradient(135deg, #1e1b4b, #312e81);
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+    .dark-toggle-thumb {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: white;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    html.dark .dark-toggle-thumb {
+      transform: translateX(20px);
+      background: #1e1b4b;
+    }
+
+    /* Confetti & celebration styles */
+    @keyframes confetti-fall {
+      0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    }
+    @keyframes celebrate-check {
+      0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+      50% { transform: scale(1.2) rotate(0deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    .confetti-piece {
+      position: fixed;
+      top: -10px;
+      z-index: 9999;
+      pointer-events: none;
+      animation: confetti-fall linear forwards;
+    }
+    .celebrate-icon {
+      animation: celebrate-check 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Reviews carousel */
+    .reviews-scroll {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .reviews-scroll::-webkit-scrollbar { display: none; }
+    @keyframes scroll-reviews {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .reviews-track {
+      animation: scroll-reviews 30s linear infinite;
+    }
+    .reviews-track:hover {
+      animation-play-state: paused;
     }
 
     /* THE SMOOTH PHYSICAL GLIDING FOOD ELEMENT */
@@ -147,6 +264,7 @@
         id="flying-food-img"
         src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&auto=format&fit=crop&q=80" 
         alt="Gliding Food" 
+        loading="lazy"
         class="w-full h-full object-cover rounded-2xl border-2 border-white shadow-xl"
       />
       <!-- Dynamic Floating Indicator Badge -->
@@ -158,59 +276,55 @@
   </div>
 
   <!-- Announcement Bar -->
-  <div class="bg-brand-dark text-white py-2 px-4 text-xs font-medium tracking-wide">
-    <div class="max-w-7xl mx-auto flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <span class="bg-brand-500 text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded-full" id="promo-pill">Chef Special</span>
-        <span>Use coupon <span class="font-bold text-brand-100 underline">FLAME25</span> for <strong>25% OFF</strong></span>
+  <div class="bg-brand-dark text-white py-2 px-3 sm:px-4 text-xs font-medium tracking-wide overflow-hidden">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <span class="shrink-0 bg-brand-500 text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded-full" id="promo-pill">Deal</span>
+        <span class="truncate">Coupon <span class="font-bold text-brand-100">FLAME25</span> — <strong>25% OFF</strong></span>
       </div>
-      <div class="hidden md:flex items-center gap-6 text-stone-300 text-xs">
-        <span class="flex items-center gap-1.5"><i data-lucide="clock" class="w-3.5 h-3.5 text-brand-500"></i> Delivery in 20–25 mins</span>
-        <span class="flex items-center gap-1.5"><i data-lucide="award" class="w-3.5 h-3.5 text-brand-accent"></i> <span id="quality-guarantee-text">100% Grass-Fed Angus</span></span>
+      <div class="hidden sm:flex items-center gap-4 text-stone-300 text-xs shrink-0">
+        <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3 text-brand-500"></i> 20–25 min</span>
       </div>
     </div>
-  </div>
-
-  <!-- Main Navigation Header -->
-  <header class="sticky top-0 z-40 glass-nav px-4 lg:px-8 py-3.5 transition-all duration-300">
-    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+  </div>  <!-- Main Navigation Header -->
+  <header class="sticky top-0 z-40 glass-nav px-3 sm:px-4 lg:px-8 py-2.5 sm:py-3.5 transition-all duration-300">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
       
       <!-- Brand Logo -->
-      <a href="#" class="flex items-center gap-3 group">
-        <div id="brand-logo-icon" class="w-10 h-10 rounded-2xl bg-brand-500 text-white flex items-center justify-center shadow-md shadow-brand-500/20 group-hover:scale-105 transition-all">
-          <i data-lucide="flame" class="w-5 h-5 fill-white"></i>
+      <a href="#" class="flex items-center gap-2 group shrink-0">
+        <div id="brand-logo-icon" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-brand-500 text-white flex items-center justify-center shadow-md shadow-brand-500/20 group-hover:scale-105 transition-all">
+          <i data-lucide="flame" class="w-4 h-4 sm:w-5 sm:h-5 fill-white"></i>
         </div>
         <div class="flex flex-col">
-          <span class="font-heading font-extrabold text-xl tracking-tight text-brand-dark flex items-center gap-1" id="brand-logo-text">
+          <span class="font-heading font-extrabold text-base sm:text-xl tracking-tight text-brand-dark flex items-center gap-1" id="brand-logo-text">
             Bistro<span class="text-brand-500">&</span>Stack
           </span>
-          <span class="text-[11px] text-surface-muted font-medium" id="brand-tagline">Artisan Kitchen &amp; Delivery</span>
+          <span class="hidden sm:block text-[11px] text-surface-muted font-medium" id="brand-tagline">Artisan Kitchen &amp; Delivery</span>
         </div>
       </a>
 
-      <!-- GLOBAL MODE SWITCHER: Burger Mode vs Pizza Mode -->
-      <div class="flex items-center bg-stone-100 p-1 rounded-2xl border border-stone-200 shadow-inner">
+      <!-- GLOBAL MODE SWITCHER: emoji-only on mobile, text on sm+ -->
+      <div class="flex items-center bg-stone-100 p-1 rounded-xl sm:rounded-2xl border border-stone-200 shadow-inner shrink-0">
         <button 
           id="mode-btn-burger" 
           onclick="switchFoodMode('burger')" 
-          class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 bg-white text-brand-dark shadow-sm"
+          class="flex items-center gap-1 sm:gap-2 px-2 sm:px-3.5 py-1.5 rounded-lg sm:rounded-xl text-xs font-bold transition-all duration-300 bg-white text-brand-dark shadow-sm"
         >
           <span class="text-base">🍔</span>
-          <span>Burger Mode</span>
+          <span class="hidden sm:inline">Burgers</span>
         </button>
-
         <button 
           id="mode-btn-pizza" 
           onclick="switchFoodMode('pizza')" 
-          class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 text-stone-500 hover:text-brand-dark"
+          class="flex items-center gap-1 sm:gap-2 px-2 sm:px-3.5 py-1.5 rounded-lg sm:rounded-xl text-xs font-bold transition-all duration-300 text-stone-500 hover:text-brand-dark"
         >
           <span class="text-base">🍕</span>
-          <span>Pizza Mode</span>
-          <span class="bg-red-500 text-white text-[9px] font-extrabold px-1.5 py-0.2 rounded-full uppercase animate-pulse">New</span>
+          <span class="hidden sm:inline">Pizza</span>
+          <span class="hidden sm:inline bg-red-500 text-white text-[9px] font-extrabold px-1.5 rounded-full uppercase">New</span>
         </button>
       </div>
 
-      <!-- Search Input -->
+      <!-- Search — hidden on mobile, shown md+ -->
       <div class="hidden md:flex flex-1 max-w-xs relative">
         <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400"></i>
         <input 
@@ -222,92 +336,107 @@
         />
       </div>
 
-      <!-- Actions -->
-      <div class="flex items-center gap-2 sm:gap-3">
-        <!-- My Orders Button with Active Orders Badge -->
+      <!-- Dark Mode Toggle -->
+      <button 
+        id="dark-mode-toggle" 
+        onclick="toggleDarkMode()" 
+        class="dark-toggle shrink-0" 
+        title="Toggle Dark Mode" 
+        aria-label="Toggle dark mode"
+      >
+        <div class="dark-toggle-thumb">
+          <span id="dark-mode-icon">☀️</span>
+        </div>
+      </button>
+
+      <!-- Right action cluster -->
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <!-- Account icon — label hidden on mobile -->
+        <button 
+          id="auth-header-btn" 
+          onclick="openAuthModal()" 
+          class="flex items-center gap-1.5 bg-white hover:bg-stone-50 border border-surface-border text-xs font-semibold px-2.5 sm:px-3 py-2 rounded-xl text-stone-700 shadow-sm transition"
+          title="Sign In / Account"
+        >
+          <i data-lucide="user" class="w-4 h-4 text-brand-500"></i>
+          <span id="auth-btn-label" class="hidden sm:inline">Sign In</span>
+        </button>
+
+        <!-- My Orders icon — label hidden on mobile -->
         <button 
           id="my-orders-header-btn" 
           onclick="openMyOrdersModal()"
-          class="flex items-center gap-2 bg-white hover:bg-stone-50 border border-surface-border text-xs font-semibold px-3.5 py-2 rounded-xl text-stone-700 shadow-sm transition"
-          title="View My Orders & History"
+          class="flex items-center gap-1.5 bg-white hover:bg-stone-50 border border-surface-border text-xs font-semibold px-2.5 sm:px-3.5 py-2 rounded-xl text-stone-700 shadow-sm transition"
+          title="My Orders"
         >
           <div class="relative flex items-center">
             <i data-lucide="receipt" class="w-4 h-4 text-brand-500"></i>
             <span id="orders-badge-count" class="hidden absolute -top-2 -right-2 bg-brand-500 text-white text-[9px] font-extrabold w-3.5 h-3.5 rounded-full items-center justify-center">0</span>
           </div>
-          <span class="hidden sm:inline">My Orders</span>
+          <span class="hidden sm:inline">Orders</span>
         </button>
 
-        <button 
-          id="tracker-header-btn" 
-          onclick="openTrackerModal()"
-          class="hidden sm:flex items-center gap-2 bg-white hover:bg-stone-50 border border-surface-border text-xs font-semibold px-3.5 py-2 rounded-xl text-stone-700 shadow-sm transition"
-        >
-          <i data-lucide="radar" class="w-4 h-4 text-brand-500 animate-spin"></i>
-          <span>Track</span>
-        </button>
-
-        <!-- Cart Button -->
+        <!-- Cart Button — always visible, subtotal hidden on xs -->
         <button 
           onclick="toggleCartDrawer(true)" 
-          class="relative flex items-center gap-2.5 bg-brand-500 hover:bg-brand-600 text-white font-semibold text-sm px-4 py-2.5 rounded-xl shadow-glow-brand transition active:scale-95"
+          class="relative flex items-center gap-1.5 sm:gap-2.5 bg-brand-500 hover:bg-brand-600 text-white font-semibold text-sm px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl shadow-glow-brand transition active:scale-95"
         >
           <div class="relative">
             <i data-lucide="shopping-bag" class="w-4 h-4"></i>
             <span id="cart-badge-count" class="absolute -top-2.5 -right-2.5 bg-brand-dark text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
           </div>
-          <span class="font-heading font-bold" id="cart-btn-subtotal">$0.00</span>
+          <span class="font-heading font-bold hidden xs:inline" id="cart-btn-subtotal">$0.00</span>
         </button>
       </div>
 
     </div>
   </header>
 
+
   <!-- Hero Section -->
-  <section id="hero-section" class="relative pt-12 pb-16 px-4 lg:px-8 max-w-7xl mx-auto">
-    <div class="grid lg:grid-cols-12 gap-12 items-center">
+  <section id="hero-section" class="relative pt-6 sm:pt-12 pb-10 sm:pb-16 px-3 sm:px-4 lg:px-8 max-w-7xl mx-auto">
+    <div class="grid lg:grid-cols-12 gap-6 sm:gap-12 items-center">
       
       <!-- Hero Copy -->
-      <div class="lg:col-span-7 space-y-6">
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-200 text-brand-600 text-xs font-semibold" id="hero-badge-pill">
+      <div class="lg:col-span-7 space-y-4 sm:space-y-6">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-50 border border-brand-200 text-brand-600 text-xs font-semibold" id="hero-badge-pill">
           <i data-lucide="sparkles" class="w-3.5 h-3.5 text-brand-500"></i>
           <span id="hero-badge-text">Artisan Charcoal Seared Daily</span>
         </div>
 
-        <h1 class="font-heading text-4xl sm:text-5xl lg:text-6xl font-extrabold text-brand-dark leading-[1.12] tracking-tight" id="hero-heading">
-          Handcrafted Burgers, <br />
+        <h1 class="font-heading text-3xl sm:text-5xl lg:text-6xl font-extrabold text-brand-dark leading-[1.12] tracking-tight" id="hero-heading">
+          Handcrafted Burgers,
           <span class="text-brand-500" id="hero-heading-accent">Delivered Fresh &amp; Hot.</span>
         </h1>
 
-        <p class="text-stone-600 text-base sm:text-lg max-w-xl leading-relaxed font-normal" id="hero-desc">
-          Double-smashed grass-fed beef with golden crispy crusts, aged Wisconsin cheddar, house-smoked bacon jam, and toasted brioche buns. Express delivery to your doorstep.
+        <p class="text-stone-600 text-sm sm:text-lg max-w-xl leading-relaxed font-normal" id="hero-desc">
+          Double-smashed grass-fed beef, aged Wisconsin cheddar, house-smoked bacon jam, and toasted brioche buns. Express delivery to your doorstep.
         </p>
 
-        <div class="flex flex-wrap items-center gap-4 pt-2">
-          <a href="#combo-builder-section" class="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-heading font-bold text-sm sm:text-base shadow-glow-brand hover:scale-[1.01] active:scale-95 transition-all">
+        <div class="flex flex-wrap items-center gap-3 pt-1">
+          <a href="#combo-builder-section" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-heading font-bold text-sm shadow-glow-brand active:scale-95 transition-all">
             <i data-lucide="package-plus" class="w-4 h-4"></i>
-            <span id="hero-combo-btn-text">Build Your Custom Combo</span>
+            <span id="hero-combo-btn-text">Build Custom Combo</span>
           </a>
-          
-          <a href="#menu-catalog" class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white hover:bg-stone-50 border border-surface-border text-brand-dark font-semibold text-sm shadow-sm transition">
-            <span>Scroll to Menu</span>
+          <a href="#menu-catalog" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white hover:bg-stone-50 border border-surface-border text-brand-dark font-semibold text-sm shadow-sm transition">
+            <span>See Menu</span>
             <i data-lucide="arrow-down" class="w-4 h-4 text-brand-500"></i>
           </a>
         </div>
 
-        <!-- Metrics -->
-        <div class="grid grid-cols-3 gap-3 sm:gap-4 pt-6 border-t border-surface-border">
-          <div class="bg-white p-4 rounded-2xl border border-surface-border shadow-soft text-center">
-            <div class="font-heading text-xl sm:text-2xl font-bold text-brand-dark">22 min</div>
-            <div class="text-stone-500 text-xs font-medium mt-0.5">Avg Delivery Time</div>
+        <!-- Metrics — compact on mobile -->
+        <div class="grid grid-cols-3 gap-2 sm:gap-4 pt-4 border-t border-surface-border">
+          <div class="bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-surface-border shadow-soft text-center">
+            <div class="font-heading text-base sm:text-2xl font-bold text-brand-dark">22 min</div>
+            <div class="text-stone-500 text-[10px] sm:text-xs font-medium mt-0.5">Delivery</div>
           </div>
-          <div class="bg-white p-4 rounded-2xl border border-surface-border shadow-soft text-center">
-            <div class="font-heading text-xl sm:text-2xl font-bold text-brand-dark">4.9 ★</div>
-            <div class="text-stone-500 text-xs font-medium mt-0.5">15,000+ Reviews</div>
+          <div class="bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-surface-border shadow-soft text-center">
+            <div class="font-heading text-base sm:text-2xl font-bold text-brand-dark">4.9 ★</div>
+            <div class="text-stone-500 text-[10px] sm:text-xs font-medium mt-0.5">15k Reviews</div>
           </div>
-          <div class="bg-white p-4 rounded-2xl border border-surface-border shadow-soft text-center">
-            <div class="font-heading text-xl sm:text-2xl font-bold text-brand-500">$0 Fee</div>
-            <div class="text-stone-500 text-xs font-medium mt-0.5">On Orders &gt; $30</div>
+          <div class="bg-white p-2.5 sm:p-4 rounded-xl sm:rounded-2xl border border-surface-border shadow-soft text-center">
+            <div class="font-heading text-base sm:text-2xl font-bold text-brand-500">$0 Fee</div>
+            <div class="text-stone-500 text-[10px] sm:text-xs font-medium mt-0.5">Over $30</div>
           </div>
         </div>
 
@@ -488,28 +617,33 @@
         </h2>
       </div>
 
-      <!-- Categories -->
-      <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none" id="category-tabs-container">
+      <!-- Categories — horizontally scrollable on mobile -->
+      <div class="pills-scroll pb-1" id="category-tabs-container">
       </div>
     </div>
 
-    <!-- Filter Pills Sub-Bar -->
-    <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-3 rounded-2xl border border-surface-border shadow-soft mb-8">
-      <div class="flex items-center gap-2 overflow-x-auto text-xs font-semibold text-stone-600">
-        <span>Filter:</span>
-        <button onclick="toggleDietFilter('all')" class="diet-filter-btn active px-3 py-1.5 rounded-lg bg-brand-dark text-white shadow-sm transition" data-diet="all">All Items</button>
-        <button onclick="toggleDietFilter('spicy')" class="diet-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-diet="spicy">🌶️ Spicy</button>
-        <button onclick="toggleDietFilter('bestseller')" class="diet-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-diet="bestseller">🏆 Best Sellers</button>
-        <button onclick="toggleDietFilter('veggie')" class="diet-filter-btn px-3 py-1.5 rounded-lg bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-diet="veggie">🥑 Plant-Based</button>
+    <!-- Filter Pills Sub-Bar — scrollable pills + sort always visible -->
+    <div class="bg-white p-3 rounded-2xl border border-surface-border shadow-soft mb-6 space-y-2">
+      <div class="pills-scroll text-xs font-semibold text-stone-600">
+        <span class="shrink-0 self-center text-stone-500">Filter:</span>
+        <button onclick="toggleDietFilter('all')" class="diet-filter-btn shrink-0 active px-3 py-1.5 rounded-lg bg-brand-dark text-white shadow-sm transition" data-diet="all">All</button>
+        <button onclick="toggleDietFilter('spicy')" class="diet-filter-btn shrink-0 px-3 py-1.5 rounded-lg bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-diet="spicy">🌶️ Spicy</button>
+        <button onclick="toggleDietFilter('bestseller')" class="diet-filter-btn shrink-0 px-3 py-1.5 rounded-lg bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-diet="bestseller">🏆 Best Sellers</button>
+        <button onclick="toggleDietFilter('veggie')" class="diet-filter-btn shrink-0 px-3 py-1.5 rounded-lg bg-stone-100 text-stone-600 hover:bg-stone-200 transition" data-diet="veggie">🥑 Plant-Based</button>
       </div>
-
-      <div class="flex items-center gap-2 text-xs text-stone-500 font-medium">
-        <label for="sort-select">Sort by:</label>
-        <select id="sort-select" onchange="handleSortChange(this.value)" class="bg-stone-50 text-brand-dark border border-stone-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-brand-500 text-xs">
-          <option value="popular">Most Popular</option>
-          <option value="price-low">Price: Low to High</option>
-          <option value="price-high">Price: High to Low</option>
-          <option value="calories">Lightest Calories</option>
+      <div class="flex items-center justify-between gap-2 text-xs text-stone-500 font-medium">
+        <!-- Mobile search — only shown on small screens -->
+        <div class="relative flex-1 md:hidden">
+          <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-stone-400"></i>
+          <input type="text" placeholder="Search menu..." oninput="handleSearch(this.value)" id="menu-search-mobile"
+            class="w-full bg-stone-50 border border-stone-200 rounded-lg pl-8 pr-3 py-1.5 text-xs text-brand-dark focus:outline-none focus:border-brand-500" />
+        </div>
+        <label for="sort-select" class="shrink-0">Sort:</label>
+        <select id="sort-select" onchange="handleSortChange(this.value)" class="shrink-0 bg-stone-50 text-brand-dark border border-stone-200 rounded-lg px-2 py-1.5 focus:outline-none focus:border-brand-500 text-xs">
+          <option value="popular">Popular</option>
+          <option value="price-low">Price ↑</option>
+          <option value="price-high">Price ↓</option>
+          <option value="calories">Calories</option>
         </select>
       </div>
     </div>
@@ -939,27 +1073,115 @@
     </div>
   </div>
 
-  <!-- Location Picker Modal -->
-  <div id="location-modal" class="fixed inset-0 z-50 bg-brand-dark/50 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-white max-w-sm w-full rounded-3xl border border-surface-border shadow-2xl p-6 space-y-4 animate-scale-pop">
-      <div class="flex items-center justify-between">
-        <h3 class="font-heading font-bold text-brand-dark text-base">Select Delivery Location</h3>
-        <button onclick="closeLocationModal()" class="text-stone-400 hover:text-brand-dark"><i data-lucide="x" class="w-4 h-4"></i></button>
-      </div>
-      <div class="space-y-2">
-        <button onclick="setDeliveryLocation('Downtown Ave, Suite 402')" class="w-full text-left p-3 rounded-xl bg-stone-50 hover:bg-stone-100 border border-stone-200 text-xs font-semibold text-brand-dark flex items-center justify-between transition">
-          <span>Downtown Ave, Suite 402</span>
-          <span class="text-emerald-700 text-[10px]">18-22 min</span>
-        </button>
-        <button onclick="setDeliveryLocation('West Midtown 5th St')" class="w-full text-left p-3 rounded-xl bg-stone-50 hover:bg-stone-100 border border-stone-200 text-xs font-semibold text-brand-dark flex items-center justify-between transition">
-          <span>West Midtown 5th St</span>
-          <span class="text-emerald-700 text-[10px]">20-25 min</span>
-        </button>
-        <button onclick="setDeliveryLocation('South Financial Plaza')" class="w-full text-left p-3 rounded-xl bg-stone-50 hover:bg-stone-100 border border-stone-200 text-xs font-semibold text-brand-dark flex items-center justify-between transition">
-          <span>South Financial Plaza</span>
-          <span class="text-brand-accent text-[10px]">25-30 min</span>
+  <!-- User Authentication & Profile Modal -->
+  <div id="auth-modal" class="fixed inset-0 z-50 bg-brand-dark/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white max-w-md w-full rounded-3xl border border-surface-border shadow-2xl p-6 space-y-5 animate-scale-pop">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b border-surface-border pb-3.5">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold">
+            <i data-lucide="user-check" class="w-4 h-4"></i>
+          </div>
+          <h3 id="auth-modal-title" class="font-heading font-extrabold text-lg text-brand-dark">Account Sign In</h3>
+        </div>
+        <button onclick="closeAuthModal()" class="text-stone-400 hover:text-brand-dark p-1 rounded-lg">
+          <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
+
+      <!-- Auth Tabs (Sign In / Register / Profile) -->
+      <div id="auth-tabs" class="flex p-1 bg-stone-100 rounded-xl">
+        <button id="tab-btn-signin" onclick="switchAuthTab('signin')" class="flex-1 py-2 text-xs font-bold rounded-lg bg-white text-brand-dark shadow-sm transition">Sign In</button>
+        <button id="tab-btn-register" onclick="switchAuthTab('register')" class="flex-1 py-2 text-xs font-bold rounded-lg text-stone-500 hover:text-brand-dark transition">New Account</button>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="signin-form" onsubmit="handleUserLogin(event)" class="space-y-3.5 text-xs">
+        <div>
+          <label class="block text-stone-700 font-semibold mb-1">Email Address</label>
+          <input type="email" id="signin-email" required placeholder="alex@example.com" value="alex@example.com" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 text-brand-dark focus:outline-none focus:border-brand-500" />
+        </div>
+        <div>
+          <label class="block text-stone-700 font-semibold mb-1">Password</label>
+          <input type="password" id="signin-password" required placeholder="••••••••" value="password123" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3.5 py-2.5 text-brand-dark focus:outline-none focus:border-brand-500" />
+        </div>
+        <div id="signin-error" class="hidden text-xs text-red-600 bg-red-50 p-2.5 rounded-xl border border-red-200 font-medium"></div>
+
+        <button type="submit" class="w-full py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-heading font-bold text-sm shadow-glow-brand transition active:scale-95">
+          Sign In to My Account
+        </button>
+
+        <div class="text-center pt-1 text-[11px] text-stone-500">
+          Demo: <span class="font-semibold text-brand-dark">alex@example.com</span> / <span class="font-semibold text-brand-dark">password123</span>
+        </div>
+      </form>
+
+      <!-- Register Form -->
+      <form id="register-form" onsubmit="handleUserRegister(event)" class="hidden space-y-3 text-xs">
+        <div>
+          <label class="block text-stone-700 font-semibold mb-1">Full Name</label>
+          <input type="text" id="reg-name" required placeholder="Sarah Jenkins" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-brand-dark focus:outline-none focus:border-brand-500" />
+        </div>
+        <div class="grid grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-stone-700 font-semibold mb-1">Email</label>
+            <input type="email" id="reg-email" required placeholder="sarah@example.com" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-brand-dark focus:outline-none focus:border-brand-500" />
+          </div>
+          <div>
+            <label class="block text-stone-700 font-semibold mb-1">Phone</label>
+            <input type="tel" id="reg-phone" placeholder="(555) 234-5678" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-brand-dark focus:outline-none focus:border-brand-500" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-stone-700 font-semibold mb-1">Default Delivery Address</label>
+          <input type="text" id="reg-address" placeholder="124 Conch Street, Apt 3" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-brand-dark focus:outline-none focus:border-brand-500" />
+        </div>
+        <div>
+          <label class="block text-stone-700 font-semibold mb-1">Password (min 6 chars)</label>
+          <input type="password" id="reg-password" required minlength="6" placeholder="Create a password" class="w-full bg-stone-50 border border-stone-200 rounded-xl px-3 py-2 text-brand-dark focus:outline-none focus:border-brand-500" />
+        </div>
+        <div id="register-error" class="hidden text-xs text-red-600 bg-red-50 p-2.5 rounded-xl border border-red-200 font-medium"></div>
+
+        <button type="submit" class="w-full py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-heading font-bold text-sm shadow-glow-brand transition active:scale-95">
+          Create Account &amp; Save Profile
+        </button>
+      </form>
+
+      <!-- Logged In Profile View -->
+      <div id="profile-view" class="hidden space-y-4 text-xs">
+        <div class="flex items-center gap-3 bg-brand-50 p-3.5 rounded-2xl border border-brand-200">
+          <div class="w-12 h-12 rounded-2xl bg-brand-500 text-white font-heading font-extrabold text-lg flex items-center justify-center shadow-md" id="profile-avatar">AM</div>
+          <div>
+            <div class="font-heading font-bold text-base text-brand-dark" id="profile-name">Alex Mercer</div>
+            <div class="text-stone-500 text-[11px]" id="profile-email">alex@example.com</div>
+            <div class="text-emerald-700 text-[10px] font-semibold flex items-center gap-1 mt-0.5"><i data-lucide="check" class="w-3 h-3"></i> Verified Member</div>
+          </div>
+        </div>
+
+        <div class="space-y-2 bg-stone-50 p-3.5 rounded-2xl border border-stone-200">
+          <div class="flex items-center justify-between text-stone-500">
+            <span class="font-medium">Saved Address:</span>
+            <span class="font-bold text-brand-dark text-right truncate max-w-[200px]" id="profile-address">742 Evergreen Terrace</span>
+          </div>
+          <div class="flex items-center justify-between text-stone-500">
+            <span class="font-medium">Phone:</span>
+            <span class="font-mono font-bold text-brand-dark" id="profile-phone">555-382-9012</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 pt-1">
+          <button onclick="closeAuthModal(); openMyOrdersModal()" class="py-2.5 px-3 bg-stone-100 hover:bg-stone-200 rounded-xl text-brand-dark font-semibold text-center flex items-center justify-center gap-1.5 transition">
+            <i data-lucide="receipt" class="w-3.5 h-3.5 text-brand-500"></i>
+            <span>Order History</span>
+          </button>
+          <button onclick="handleUserLogout()" class="py-2.5 px-3 bg-red-50 hover:bg-red-100 text-red-700 rounded-xl font-semibold text-center flex items-center justify-center gap-1.5 transition">
+            <i data-lucide="log-out" class="w-3.5 h-3.5 text-red-600"></i>
+            <span>Sign Out</span>
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -1294,6 +1516,8 @@
     let customizerSelectedAddons = [];
 
     window.addEventListener('DOMContentLoaded', () => {
+      loadDarkModePreference();
+      loadCartFromStorage();
       applyCurrentMode();
       updateCartUI();
       initSilkySmoothFoodGlide();
@@ -1574,6 +1798,7 @@
       };
       cart.push(comboItem);
       updateCartUI();
+      saveCartToStorage();
       showToast(`Added Custom Combo to bag!`, 'success');
       toggleCartDrawer(true);
     }
@@ -1641,7 +1866,7 @@
         <div class="clean-card rounded-3xl p-5 flex flex-col justify-between group shadow-soft">
           <div>
             <div class="relative h-48 w-full rounded-2xl overflow-hidden mb-4">
-              <img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <img src="${item.image}" alt="${item.name}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               
               <div class="absolute top-3 left-3 flex flex-wrap gap-1.5">
                 ${item.diet.includes('bestseller') ? `<span class="bg-brand-dark text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-sm"><i data-lucide="award" class="w-3 h-3"></i> Top Pick</span>` : ''}
@@ -1698,6 +1923,7 @@
       };
       cart.push(heroItem);
       updateCartUI();
+      saveCartToStorage();
       showToast(`Added ${hero.name} to bag!`, 'success');
       toggleCartDrawer(true);
     }
@@ -1724,6 +1950,7 @@
       }
 
       updateCartUI();
+      saveCartToStorage();
       showToast(`Added ${item.name} to bag!`, 'success');
     }
 
@@ -1803,11 +2030,13 @@
         cart = cart.filter(c => c.id !== cartId);
       }
       updateCartUI();
+      saveCartToStorage();
     }
 
     function removeCartItem(cartId) {
       cart = cart.filter(c => c.id !== cartId);
       updateCartUI();
+      saveCartToStorage();
     }
 
     function calculateCart() {
@@ -1994,6 +2223,7 @@
 
       closeCustomizerModal();
       updateCartUI();
+      saveCartToStorage();
       showToast(`Added custom ${activeCustomizerItem.name} to bag!`, 'success');
       toggleCartDrawer(true);
     }
@@ -2047,6 +2277,18 @@
       toggleCartDrawer(false);
       calculateCart();
       selectPaymentMethod('card'); // default active
+
+      // Auto-fill from authenticated profile if available
+      if (currentUser) {
+        const form = document.getElementById('checkout-form');
+        if (form) {
+          const inputs = form.querySelectorAll('input');
+          if (currentUser.name && inputs[0]) inputs[0].value = currentUser.name;
+          if (currentUser.address && inputs[1]) inputs[1].value = currentUser.address;
+          if (currentUser.phone && inputs[2]) inputs[2].value = currentUser.phone;
+        }
+      }
+
       document.getElementById('checkout-modal').classList.remove('hidden');
       document.getElementById('checkout-modal').classList.add('flex');
     }
@@ -2062,9 +2304,9 @@
 
       const form = e.target;
       const inputs = form.querySelectorAll('input');
-      const customerName = inputs[0]?.value || 'Alex Mercer';
-      const deliveryAddress = inputs[1]?.value || '742 Evergreen Terrace';
-      const phone = inputs[2]?.value || '555-382-9012';
+      const customerName = inputs[0]?.value || currentUser?.name || 'Alex Mercer';
+      const deliveryAddress = inputs[1]?.value || currentUser?.address || '742 Evergreen Terrace';
+      const phone = inputs[2]?.value || currentUser?.phone || '555-382-9012';
       const paymentMethod = document.getElementById('selected-payment-input')?.value || 'card';
       const tip = parseFloat(document.getElementById('tip-select')?.value || '3.50');
 
@@ -2074,6 +2316,7 @@
 
       try {
         const payload = {
+          userId: currentUser?.userId || null,
           customerName,
           deliveryAddress,
           phone,
@@ -2083,9 +2326,15 @@
           items: cart
         };
 
+        const headers = { 'Content-Type': 'application/json' };
+        const token = getAuthToken();
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+
         const res = await fetch(`${API_BASE_URL}/api/orders`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify(payload)
         });
 
@@ -2111,8 +2360,9 @@
           cart = [];
           appliedCoupon = null;
           updateCartUI();
+          saveCartToStorage();
           
-          showToast(`Order #${currentActiveOrderId} created on server!`, 'success');
+          showCelebration(currentActiveOrderId);
           openTrackerModal(currentActiveOrderId);
         } else {
           throw new Error(json.error || 'Server error placing order');
@@ -2137,7 +2387,8 @@
 
         cart = [];
         updateCartUI();
-        showToast(`Order #${currentActiveOrderId} placed successfully!`, 'success');
+        saveCartToStorage();
+        showCelebration(currentActiveOrderId);
         openTrackerModal(currentActiveOrderId);
       }
     }
@@ -2197,6 +2448,29 @@
       modal.classList.add('flex');
 
       let orders = getUserOrders();
+
+      // If user is authenticated or has token, fetch server-side orders
+      const token = getAuthToken();
+      if (token || currentUser) {
+        try {
+          const headers = {};
+          if (token) headers['Authorization'] = `Bearer ${token}`;
+          const q = currentUser?.userId ? `?userId=${currentUser.userId}` : (currentUser?.phone ? `?phone=${currentUser.phone}` : '');
+          const res = await fetch(`${API_BASE_URL}/api/orders/my-orders${q}`, { headers });
+          const json = await res.json();
+          if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+            // Merge server orders with local
+            json.data.forEach(srvOrder => {
+              if (!orders.some(o => o.orderId === srvOrder.orderId)) {
+                orders.push(srvOrder);
+              }
+            });
+            orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            localStorage.setItem('bistro_user_orders', JSON.stringify(orders));
+          }
+        } catch (err) {}
+      }
+
       countLabel.textContent = `${orders.length} order${orders.length === 1 ? '' : 's'} in your history`;
 
       if (orders.length === 0) {
@@ -2473,12 +2747,890 @@
       }, 3500);
     }
 
+    // ==========================================================
+    // CHEF GEMINI AI CONCIERGE (Powered by gemini_web2api)
+    // ==========================================================
+    let aiChatHistory = [];
+    let isAiTyping = false;
+
+    function toggleAiChat() {
+      const modal = document.getElementById('ai-concierge-modal');
+      const isHidden = modal.classList.contains('pointer-events-none');
+      
+      if (isHidden) {
+        modal.classList.remove('pointer-events-none', 'opacity-0', 'scale-95');
+        modal.classList.add('opacity-100', 'scale-100');
+        document.getElementById('ai-chat-input').focus();
+        if (aiChatHistory.length === 0) {
+          renderAiMessages();
+        }
+      } else {
+        modal.classList.add('pointer-events-none', 'opacity-0', 'scale-95');
+        modal.classList.remove('opacity-100', 'scale-100');
+      }
+      lucide.createIcons();
+    }
+
+    function renderAiMessages() {
+      const container = document.getElementById('ai-messages-container');
+      if (!container) return;
+
+      if (aiChatHistory.length === 0) {
+        container.innerHTML = `
+          <div class="p-4 rounded-2xl bg-stone-800/80 border border-stone-700/60 text-stone-200 text-xs leading-relaxed space-y-2">
+            <div class="flex items-center gap-2 text-brand-400 font-bold text-sm">
+              <span>👨‍🍳 Chef Gemini</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/30">AI Concierge</span>
+            </div>
+            <p>Hey there! I am your AI food assistant powered by <strong>Gemini 3.7 Flash</strong>. Ask me anything about our burgers, pizzas, ingredients, combos, or discounts!</p>
+            <div class="pt-2 flex flex-wrap gap-1.5">
+              <button onclick="sendAiPrompt('What is your best spicy burger?')" class="text-[11px] px-2.5 py-1 rounded-full bg-stone-700/70 hover:bg-brand-500 hover:text-white transition-all text-stone-300">🌶️ Best Spicy Burger</button>
+              <button onclick="sendAiPrompt('Recommend a combo under $25')" class="text-[11px] px-2.5 py-1 rounded-full bg-stone-700/70 hover:bg-brand-500 hover:text-white transition-all text-stone-300">🍔 Combo under $25</button>
+              <button onclick="sendAiPrompt('What active coupons do you have?')" class="text-[11px] px-2.5 py-1 rounded-full bg-stone-700/70 hover:bg-brand-500 hover:text-white transition-all text-stone-300">🎟️ Active Coupons</button>
+              <button onclick="sendAiPrompt('Show vegetarian friendly options')" class="text-[11px] px-2.5 py-1 rounded-full bg-stone-700/70 hover:bg-brand-500 hover:text-white transition-all text-stone-300">🌱 Vegetarian</button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = aiChatHistory.map(msg => {
+        const isUser = msg.role === 'user';
+        const bg = isUser ? 'bg-brand-600 text-white ml-auto' : 'bg-stone-800/90 text-stone-200 border border-stone-700/60 mr-auto';
+        const formatted = isUser ? msg.content : formatMarkdownText(msg.content);
+        return `
+          <div class="flex flex-col ${isUser ? 'items-end' : 'items-start'} max-w-[88%] space-y-1">
+            <div class="px-3.5 py-2.5 rounded-2xl text-xs leading-relaxed ${bg} shadow-sm">
+              ${formatted}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (isAiTyping) {
+        container.innerHTML += `
+          <div class="flex items-center gap-1.5 p-3 rounded-2xl bg-stone-800/90 border border-stone-700/60 text-stone-400 text-xs w-20">
+            <span class="w-1.5 h-1.5 rounded-full bg-brand-400 animate-bounce"></span>
+            <span class="w-1.5 h-1.5 rounded-full bg-brand-400 animate-bounce [animation-delay:0.2s]"></span>
+            <span class="w-1.5 h-1.5 rounded-full bg-brand-400 animate-bounce [animation-delay:0.4s]"></span>
+          </div>
+        `;
+      }
+
+      container.scrollTop = container.scrollHeight;
+      lucide.createIcons();
+    }
+
+    function formatMarkdownText(text) {
+      if (!text) return '';
+      return text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/\n\n/g, '<br/><br/>')
+        .replace(/\n/g, '<br/>')
+        .replace(/`([^`]+)`/g, '<code class="px-1 py-0.5 rounded bg-stone-700 text-amber-300 font-mono text-[10px]">$1</code>');
+    }
+
+    function sendAiPrompt(text) {
+      document.getElementById('ai-chat-input').value = text;
+      handleAiChatSubmit();
+    }
+
+    async function handleAiChatSubmit() {
+      const input = document.getElementById('ai-chat-input');
+      const text = input.value.trim();
+      if (!text || isAiTyping) return;
+
+      input.value = '';
+      aiChatHistory.push({ role: 'user', content: text });
+      isAiTyping = true;
+      renderAiMessages();
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/ai/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: aiChatHistory })
+        });
+
+        const data = await res.json();
+        if (data.success && data.reply) {
+          aiChatHistory.push({ role: 'assistant', content: data.reply });
+        } else {
+          aiChatHistory.push({ role: 'assistant', content: data.error || 'Sorry, I could not process that request right now.' });
+        }
+      } catch (err) {
+        aiChatHistory.push({ role: 'assistant', content: 'Connection issue. Make sure both the API and gemini_web2api servers are active.' });
+      } finally {
+        isAiTyping = false;
+        renderAiMessages();
+      }
+    }
+
+    function clearAiChat() {
+      aiChatHistory = [];
+      renderAiMessages();
+    }
+
     // Initialize UI & user order tracking badge on startup
     window.addEventListener('DOMContentLoaded', () => {
       updateOrdersBadge();
       updateCartUI();
     });
     updateOrdersBadge();
+
+    // ==========================================================
+    // DARK MODE TOGGLE
+    // ==========================================================
+    function toggleDarkMode() {
+      const html = document.documentElement;
+      const isDark = html.classList.toggle('dark');
+      localStorage.setItem('bistro_dark_mode', isDark ? 'true' : 'false');
+      const icon = document.getElementById('dark-mode-icon');
+      if (icon) icon.textContent = isDark ? '🌙' : '☀️';
+    }
+
+    function loadDarkModePreference() {
+      const saved = localStorage.getItem('bistro_dark_mode');
+      if (saved === 'true') {
+        document.documentElement.classList.add('dark');
+        const icon = document.getElementById('dark-mode-icon');
+        if (icon) icon.textContent = '🌙';
+      }
+    }
+
+    // ==========================================================
+    // CART PERSISTENCE (localStorage)
+    // ==========================================================
+    function saveCartToStorage() {
+      try {
+        localStorage.setItem('bistro_cart', JSON.stringify(cart));
+        if (appliedCoupon) {
+          localStorage.setItem('bistro_coupon', JSON.stringify(appliedCoupon));
+        } else {
+          localStorage.removeItem('bistro_coupon');
+        }
+        localStorage.setItem('bistro_mode', currentMode);
+      } catch(e) {
+        console.warn('Could not save cart:', e);
+      }
+    }
+
+    function loadCartFromStorage() {
+      try {
+        const savedCart = localStorage.getItem('bistro_cart');
+        if (savedCart) {
+          const parsed = JSON.parse(savedCart);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            cart = parsed;
+          }
+        }
+        const savedCoupon = localStorage.getItem('bistro_coupon');
+        if (savedCoupon) {
+          appliedCoupon = JSON.parse(savedCoupon);
+        }
+        const savedMode = localStorage.getItem('bistro_mode');
+        if (savedMode && (savedMode === 'burger' || savedMode === 'pizza')) {
+          currentMode = savedMode;
+          // Update mode toggle buttons
+          const burgerBtn = document.getElementById('mode-btn-burger');
+          const pizzaBtn = document.getElementById('mode-btn-pizza');
+          if (currentMode === 'pizza') {
+            pizzaBtn.className = "flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 bg-white text-red-600 shadow-sm";
+            burgerBtn.className = "flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-300 text-stone-500 hover:text-brand-dark";
+          }
+        }
+      } catch(e) {
+        console.warn('Could not load cart:', e);
+      }
+    }
+
+    // ==========================================================
+    // ORDER SUCCESS CELEBRATION
+    // ==========================================================
+    function showCelebration(orderId) {
+      // Set order ID text
+      const orderIdEl = document.getElementById('celebration-order-id');
+      if (orderIdEl) orderIdEl.textContent = orderId || 'ORD-000000';
+
+      // Show modal
+      const modal = document.getElementById('celebration-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      // Launch confetti
+      launchConfetti();
+
+      // Render icons
+      lucide.createIcons();
+    }
+
+    function closeCelebrationModal() {
+      const modal = document.getElementById('celebration-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function closeCelebrationAndTrack() {
+      closeCelebrationModal();
+      if (currentActiveOrderId) {
+        openTrackerModal(currentActiveOrderId);
+      }
+    }
+
+    // ==========================================================
+    // USER AUTHENTICATION & PROFILE SYSTEM
+    // ==========================================================
+    let currentUser = null;
+
+    function getAuthToken() {
+      return localStorage.getItem('bistro_auth_token') || null;
+    }
+
+    async function loadAuthenticatedUser() {
+      const token = getAuthToken();
+      if (!token) {
+        updateAuthUI(null);
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/auth/me`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data.success && data.user) {
+          currentUser = data.user;
+          updateAuthUI(currentUser);
+        } else {
+          localStorage.removeItem('bistro_auth_token');
+          updateAuthUI(null);
+        }
+      } catch (err) {
+        // Cached local user fallback
+        const localUser = localStorage.getItem('bistro_user_data');
+        if (localUser) {
+          try {
+            currentUser = JSON.parse(localUser);
+            updateAuthUI(currentUser);
+          } catch(e) {}
+        }
+      }
+    }
+
+    function updateAuthUI(user) {
+      const label = document.getElementById('auth-btn-label');
+      const btn = document.getElementById('auth-header-btn');
+      if (!btn || !label) return;
+
+      if (user) {
+        const initials = user.name ? user.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0, 2) : 'ME';
+        label.textContent = user.name.split(' ')[0];
+        btn.className = "flex items-center gap-2 bg-brand-50 hover:bg-brand-100 border border-brand-200 text-xs font-bold px-3 py-1.5 rounded-xl text-brand-700 shadow-sm transition";
+        btn.innerHTML = `
+          <div class="w-5 h-5 rounded-full bg-brand-500 text-white flex items-center justify-center text-[10px] font-extrabold">${initials}</div>
+          <span class="hidden sm:inline">${user.name.split(' ')[0]}</span>
+        `;
+      } else {
+        btn.className = "flex items-center gap-2 bg-white hover:bg-stone-50 border border-surface-border text-xs font-semibold px-3 py-2 rounded-xl text-stone-700 shadow-sm transition";
+        btn.innerHTML = `
+          <i data-lucide="user" class="w-4 h-4 text-brand-500"></i>
+          <span class="hidden sm:inline">Sign In</span>
+        `;
+      }
+      lucide.createIcons();
+    }
+
+    function openAuthModal(defaultTab = 'signin') {
+      const modal = document.getElementById('auth-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      if (currentUser) {
+        switchAuthTab('profile');
+      } else {
+        switchAuthTab(defaultTab);
+      }
+    }
+
+    function closeAuthModal() {
+      const modal = document.getElementById('auth-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function switchAuthTab(tab) {
+      const title = document.getElementById('auth-modal-title');
+      const tabGroup = document.getElementById('auth-tabs');
+      const signinForm = document.getElementById('signin-form');
+      const registerForm = document.getElementById('register-form');
+      const profileView = document.getElementById('profile-view');
+      const btnSignin = document.getElementById('tab-btn-signin');
+      const btnRegister = document.getElementById('tab-btn-register');
+
+      if (tab === 'profile') {
+        title.textContent = 'My Profile & Account';
+        tabGroup.classList.add('hidden');
+        signinForm.classList.add('hidden');
+        registerForm.classList.add('hidden');
+        profileView.classList.remove('hidden');
+
+        if (currentUser) {
+          document.getElementById('profile-name').textContent = currentUser.name || 'Member';
+          document.getElementById('profile-email').textContent = currentUser.email || '';
+          document.getElementById('profile-address').textContent = currentUser.address || 'No default address saved';
+          document.getElementById('profile-phone').textContent = currentUser.phone || 'No phone set';
+          const initials = currentUser.name ? currentUser.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0, 2) : 'ME';
+          document.getElementById('profile-avatar').textContent = initials;
+        }
+      } else if (tab === 'register') {
+        title.textContent = 'Create Bistro & Stack Account';
+        tabGroup.classList.remove('hidden');
+        signinForm.classList.add('hidden');
+        profileView.classList.add('hidden');
+        registerForm.classList.remove('hidden');
+
+        btnRegister.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white text-brand-dark shadow-sm transition";
+        btnSignin.className = "flex-1 py-2 text-xs font-bold rounded-lg text-stone-500 hover:text-brand-dark transition";
+      } else {
+        title.textContent = 'Account Sign In';
+        tabGroup.classList.remove('hidden');
+        registerForm.classList.add('hidden');
+        profileView.classList.add('hidden');
+        signinForm.classList.remove('hidden');
+
+        btnSignin.className = "flex-1 py-2 text-xs font-bold rounded-lg bg-white text-brand-dark shadow-sm transition";
+        btnRegister.className = "flex-1 py-2 text-xs font-bold rounded-lg text-stone-500 hover:text-brand-dark transition";
+      }
+      lucide.createIcons();
+    }
+
+    async function handleUserLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('signin-email').value.trim();
+      const password = document.getElementById('signin-password').value;
+      const errBox = document.getElementById('signin-error');
+      errBox.classList.add('hidden');
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (data.success && data.token) {
+          localStorage.setItem('bistro_auth_token', data.token);
+          localStorage.setItem('bistro_user_data', JSON.stringify(data.user));
+          currentUser = data.user;
+          updateAuthUI(currentUser);
+          closeAuthModal();
+          showToast(`Welcome back, ${data.user.name.split(' ')[0]}! 👋`, 'success');
+        } else {
+          errBox.textContent = data.error || 'Invalid credentials';
+          errBox.classList.remove('hidden');
+        }
+      } catch (err) {
+        // Fallback for offline demo
+        const demoUser = {
+          name: 'Alex Mercer',
+          email,
+          phone: '555-382-9012',
+          address: '742 Evergreen Terrace'
+        };
+        currentUser = demoUser;
+        localStorage.setItem('bistro_auth_token', 'tok_demo_alex');
+        localStorage.setItem('bistro_user_data', JSON.stringify(demoUser));
+        updateAuthUI(currentUser);
+        closeAuthModal();
+        showToast(`Welcome back, Alex! 👋`, 'success');
+      }
+    }
+
+    async function handleUserRegister(e) {
+      e.preventDefault();
+      const name = document.getElementById('reg-name').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const phone = document.getElementById('reg-phone').value.trim();
+      const address = document.getElementById('reg-address').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const errBox = document.getElementById('register-error');
+      errBox.classList.add('hidden');
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, phone, address, password })
+        });
+        const data = await res.json();
+        if (data.success && data.token) {
+          localStorage.setItem('bistro_auth_token', data.token);
+          localStorage.setItem('bistro_user_data', JSON.stringify(data.user));
+          currentUser = data.user;
+          updateAuthUI(currentUser);
+          closeAuthModal();
+          showToast(`Account created! Welcome to Bistro & Stack, ${name}! 🎉`, 'success');
+        } else {
+          errBox.textContent = data.error || 'Failed to create account';
+          errBox.classList.remove('hidden');
+        }
+      } catch (err) {
+        const newUser = { name, email, phone, address };
+        currentUser = newUser;
+        localStorage.setItem('bistro_auth_token', 'tok_demo_new');
+        localStorage.setItem('bistro_user_data', JSON.stringify(newUser));
+        updateAuthUI(currentUser);
+        closeAuthModal();
+        showToast(`Account created! Welcome, ${name}! 🎉`, 'success');
+      }
+    }
+
+    function handleUserLogout() {
+      localStorage.removeItem('bistro_auth_token');
+      localStorage.removeItem('bistro_user_data');
+      currentUser = null;
+      updateAuthUI(null);
+      closeAuthModal();
+      showToast('Signed out successfully.', 'info');
+    }
+
+    // Startup initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      loadAuthenticatedUser();
+    });
   </script>
+
+  <!-- ==========================================================
+       CUSTOMER REVIEWS & TESTIMONIALS SECTION
+       ========================================================== -->
+  <section id="reviews-section" class="relative py-16 px-4 lg:px-8 overflow-hidden">
+    <div class="max-w-7xl mx-auto mb-10">
+      <div class="text-center space-y-3">
+        <div class="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-500">
+          <i data-lucide="star" class="w-3.5 h-3.5 fill-brand-500"></i>
+          <span>What Our Customers Say</span>
+        </div>
+        <h2 class="font-heading text-3xl sm:text-4xl font-extrabold text-brand-dark">Loved by 15,000+ Foodies</h2>
+        <p class="text-stone-500 text-sm max-w-md mx-auto">Real reviews from real hunger warriors. Join the Bistro & Stack family today!</p>
+      </div>
+    </div>
+
+    <!-- Auto-scrolling Reviews Carousel -->
+    <div class="reviews-scroll overflow-hidden relative">
+      <!-- Fade edges -->
+      <div class="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-surface-cream to-transparent z-10 pointer-events-none"></div>
+      <div class="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-surface-cream to-transparent z-10 pointer-events-none"></div>
+      
+      <div class="reviews-track flex gap-5 w-max">
+        <!-- Review 1 -->
+        <div class="clean-card w-80 shrink-0 p-5 rounded-2xl shadow-soft">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-brand-500 to-brand-accent flex items-center justify-center text-white font-bold text-sm">SM</div>
+            <div>
+              <div class="text-sm font-bold text-brand-dark">Sarah M.</div>
+              <div class="text-[11px] text-stone-500">Verified Order • 2 days ago</div>
+            </div>
+            <div class="ml-auto text-amber-500 text-xs">★★★★★</div>
+          </div>
+          <p class="text-xs text-stone-600 leading-relaxed">"The Inferno Double Angus is absolutely incredible! Perfectly seared with that smoky flavor. Delivered piping hot in 18 minutes. Best burger delivery in the city, hands down! 🔥"</p>
+        </div>
+        <!-- Review 2 -->
+        <div class="clean-card w-80 shrink-0 p-5 rounded-2xl shadow-soft">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white font-bold text-sm">JK</div>
+            <div>
+              <div class="text-sm font-bold text-brand-dark">James K.</div>
+              <div class="text-[11px] text-stone-500">Verified Order • 5 days ago</div>
+            </div>
+            <div class="ml-auto text-amber-500 text-xs">★★★★★</div>
+          </div>
+          <p class="text-xs text-stone-600 leading-relaxed">"Wood-fired pizza that rivals authentic Italian! The Truffle Burrata pizza is a masterpiece. Crispy crust, fresh ingredients, and the combo deal saved me $5! Ordering weekly now 🍕"</p>
+        </div>
+        <!-- Review 3 -->
+        <div class="clean-card w-80 shrink-0 p-5 rounded-2xl shadow-soft">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm">AL</div>
+            <div>
+              <div class="text-sm font-bold text-brand-dark">Aisha L.</div>
+              <div class="text-[11px] text-stone-500">Verified Order • 1 week ago</div>
+            </div>
+            <div class="ml-auto text-amber-500 text-xs">★★★★★</div>
+          </div>
+          <p class="text-xs text-stone-600 leading-relaxed">"Finally a plant-based burger that actually tastes amazing! The Green Supreme Beyond Burger is packed with flavor. Love that they have vegan options without compromising on taste 🥑"</p>
+        </div>
+        <!-- Review 4 -->
+        <div class="clean-card w-80 shrink-0 p-5 rounded-2xl shadow-soft">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm">DW</div>
+            <div>
+              <div class="text-sm font-bold text-brand-dark">David W.</div>
+              <div class="text-[11px] text-stone-500">Verified Order • 3 days ago</div>
+            </div>
+            <div class="ml-auto text-amber-500 text-xs">★★★★☆</div>
+          </div>
+          <p class="text-xs text-stone-600 leading-relaxed">"Nashville Crispy Clucker brought the heat! Spicy, crunchy, and the ranch drizzle is chefs kiss. Used the FLAME25 code and saved big. The tracker feature is super cool too 🌶️"</p>
+        </div>
+        <!-- Review 5 -->
+        <div class="clean-card w-80 shrink-0 p-5 rounded-2xl shadow-soft">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-white font-bold text-sm">MP</div>
+            <div>
+              <div class="text-sm font-bold text-brand-dark">Maria P.</div>
+              <div class="text-[11px] text-stone-500">Verified Order • 1 day ago</div>
+            </div>
+            <div class="ml-auto text-amber-500 text-xs">★★★★★</div>
+          </div>
+          <p class="text-xs text-stone-600 leading-relaxed">"Ordered the combo meal deal builder — what a genius feature! Got a burger, truffle fries, shake and dip all customized. Saved $5.51 and it was all delicious. Already a regular! 🏆"</p>
+        </div>
+        <!-- Review 6 -->
+        <div class="clean-card w-80 shrink-0 p-5 rounded-2xl shadow-soft">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm">RK</div>
+            <div>
+              <div class="text-sm font-bold text-brand-dark">Raj K.</div>
+              <div class="text-[11px] text-stone-500">Verified Order • 4 days ago</div>
+            </div>
+            <div class="ml-auto text-amber-500 text-xs">★★★★★</div>
+          </div>
+          <p class="text-xs text-stone-600 leading-relaxed">"The Smoked Vanilla Salted Caramel Shake alone is worth ordering for! Combined with the Smokey BBQ Bacon Stack — absolute perfection. Real-time delivery tracking worked flawlessly 🍔"</p>
+        </div>
+        <!-- Duplicate set for infinite scroll -->
+        <div class="clean-card w-80 shrink-0 p-5 rounded-2xl shadow-soft">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-brand-500 to-brand-accent flex items-center justify-center text-white font-bold text-sm">SM</div>
+            <div>
+              <div class="text-sm font-bold text-brand-dark">Sarah M.</div>
+              <div class="text-[11px] text-stone-500">Verified Order • 2 days ago</div>
+            </div>
+            <div class="ml-auto text-amber-500 text-xs">★★★★★</div>
+          </div>
+          <p class="text-xs text-stone-600 leading-relaxed">"The Inferno Double Angus is absolutely incredible! Perfectly seared with that smoky flavor. Delivered piping hot in 18 minutes. Best burger delivery in the city, hands down! 🔥"</p>
+        </div>
+        <div class="clean-card w-80 shrink-0 p-5 rounded-2xl shadow-soft">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white font-bold text-sm">JK</div>
+            <div>
+              <div class="text-sm font-bold text-brand-dark">James K.</div>
+              <div class="text-[11px] text-stone-500">Verified Order • 5 days ago</div>
+            </div>
+            <div class="ml-auto text-amber-500 text-xs">★★★★★</div>
+          </div>
+          <p class="text-xs text-stone-600 leading-relaxed">"Wood-fired pizza that rivals authentic Italian! The Truffle Burrata pizza is a masterpiece. Crispy crust, fresh ingredients, and the combo deal saved me $5! Ordering weekly now 🍕"</p>
+        </div>
+        <div class="clean-card w-80 shrink-0 p-5 rounded-2xl shadow-soft">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-sm">AL</div>
+            <div>
+              <div class="text-sm font-bold text-brand-dark">Aisha L.</div>
+              <div class="text-[11px] text-stone-500">Verified Order • 1 week ago</div>
+            </div>
+            <div class="ml-auto text-amber-500 text-xs">★★★★★</div>
+          </div>
+          <p class="text-xs text-stone-600 leading-relaxed">"Finally a plant-based burger that actually tastes amazing! The Green Supreme Beyond Burger is packed with flavor. Love that they have vegan options without compromising on taste 🥑"</p>
+        </div>
+        <div class="clean-card w-80 shrink-0 p-5 rounded-2xl shadow-soft">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm">DW</div>
+            <div>
+              <div class="text-sm font-bold text-brand-dark">David W.</div>
+              <div class="text-[11px] text-stone-500">Verified Order • 3 days ago</div>
+            </div>
+            <div class="ml-auto text-amber-500 text-xs">★★★★☆</div>
+          </div>
+          <p class="text-xs text-stone-600 leading-relaxed">"Nashville Crispy Clucker brought the heat! Spicy, crunchy, and the ranch drizzle is chefs kiss. Used the FLAME25 code and saved big. The tracker feature is super cool too 🌶️"</p>
+        </div>
+        <div class="clean-card w-80 shrink-0 p-5 rounded-2xl shadow-soft">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-white font-bold text-sm">MP</div>
+            <div>
+              <div class="text-sm font-bold text-brand-dark">Maria P.</div>
+              <div class="text-[11px] text-stone-500">Verified Order • 1 day ago</div>
+            </div>
+            <div class="ml-auto text-amber-500 text-xs">★★★★★</div>
+          </div>
+          <p class="text-xs text-stone-600 leading-relaxed">"Ordered the combo meal deal builder — what a genius feature! Got a burger, truffle fries, shake and dip all customized. Saved $5.51 and it was all delicious. Already a regular! 🏆"</p>
+        </div>
+        <div class="clean-card w-80 shrink-0 p-5 rounded-2xl shadow-soft">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm">RK</div>
+            <div>
+              <div class="text-sm font-bold text-brand-dark">Raj K.</div>
+              <div class="text-[11px] text-stone-500">Verified Order • 4 days ago</div>
+            </div>
+            <div class="ml-auto text-amber-500 text-xs">★★★★★</div>
+          </div>
+          <p class="text-xs text-stone-600 leading-relaxed">"The Smoked Vanilla Salted Caramel Shake alone is worth ordering for! Combined with the Smokey BBQ Bacon Stack — absolute perfection. Real-time delivery tracking worked flawlessly 🍔"</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Order Success Celebration Modal -->
+  <div id="celebration-modal" class="fixed inset-0 z-[60] bg-brand-dark/70 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="bg-white max-w-sm w-full rounded-3xl border border-surface-border shadow-2xl p-8 text-center space-y-5 animate-scale-pop">
+      
+      <!-- Animated Checkmark -->
+      <div class="mx-auto w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center celebrate-icon">
+        <svg class="w-10 h-10 text-emerald-600" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+
+      <div>
+        <h3 class="font-heading text-2xl font-extrabold text-brand-dark">Order Placed! 🎉</h3>
+        <p class="text-sm text-stone-500 mt-1">Your meal is being prepared with love</p>
+      </div>
+
+      <div class="bg-stone-50 rounded-2xl p-4 border border-stone-200 space-y-2">
+        <div class="text-[11px] text-stone-400 font-bold uppercase tracking-wider">Order ID</div>
+        <div class="font-heading text-xl font-extrabold text-brand-500" id="celebration-order-id">ORD-000000</div>
+        <div class="flex items-center justify-center gap-2 text-xs text-stone-600">
+          <i data-lucide="clock" class="w-3.5 h-3.5 text-brand-500"></i>
+          <span>Estimated Delivery: <strong class="text-brand-dark">18-22 min</strong></span>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-center gap-2 text-xs text-emerald-700 bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-200">
+        <i data-lucide="shield-check" class="w-4 h-4"></i>
+        <span>Payment confirmed & kitchen notified</span>
+      </div>
+
+      <div class="space-y-2.5 pt-2">
+        <button 
+          onclick="closeCelebrationAndTrack()" 
+          class="w-full py-3.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-heading font-bold text-sm flex items-center justify-center gap-2 shadow-glow-brand active:scale-95 transition"
+        >
+          <i data-lucide="radar" class="w-4 h-4"></i>
+          <span>Track My Order Live</span>
+        </button>
+        <button 
+          onclick="closeCelebrationModal()" 
+          class="w-full py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-brand-dark text-xs font-semibold transition"
+        >
+          Continue Shopping
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==========================================================
+       PREMIUM FOOTER
+       ========================================================== -->
+  <footer id="site-footer" class="relative bg-brand-dark text-stone-300 overflow-hidden">
+    <!-- Decorative top edge -->
+    <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-brand-500 via-brand-accent to-pizza-500"></div>
+
+    <!-- Ambient glow blobs -->
+    <div class="absolute top-20 -left-32 w-80 h-80 rounded-full bg-brand-500/5 blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-10 right-0 w-96 h-96 rounded-full bg-pizza-500/5 blur-3xl pointer-events-none"></div>
+
+    <!-- Main footer grid -->
+    <div class="relative max-w-7xl mx-auto px-4 lg:px-8 pt-16 pb-10">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-14">
+
+        <!-- Col 1 — Brand -->
+        <div class="space-y-5">
+          <a href="#hero-section" class="flex items-center gap-3 group">
+            <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-brand-500 to-brand-accent flex items-center justify-center text-white shadow-lg shadow-brand-500/25 group-hover:scale-110 transition-transform">
+              <i data-lucide="flame" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <span class="font-heading font-extrabold text-xl text-white tracking-tight">BISTRO<span class="text-brand-500">&</span>STACK</span>
+              <span class="block text-[10px] text-stone-500 font-medium tracking-wider uppercase">Artisan Kitchen & Delivery</span>
+            </div>
+          </a>
+          <p class="text-xs text-stone-400 leading-relaxed max-w-xs">
+            Flame-seared Angus patties, hand-tossed wood-fired pizzas, and chef-crafted sides — all delivered hot to your door in 30 minutes or less.
+          </p>
+          <!-- Social Icons -->
+          <div class="flex items-center gap-2.5 pt-1">
+            <a href="#" aria-label="Instagram" class="w-9 h-9 rounded-xl bg-stone-800/80 border border-stone-700/50 flex items-center justify-center text-stone-400 hover:text-white hover:bg-gradient-to-tr hover:from-purple-500 hover:to-pink-500 hover:border-transparent hover:shadow-lg hover:shadow-pink-500/20 transition-all duration-300">
+              <i data-lucide="instagram" class="w-4 h-4"></i>
+            </a>
+            <a href="#" aria-label="Twitter / X" class="w-9 h-9 rounded-xl bg-stone-800/80 border border-stone-700/50 flex items-center justify-center text-stone-400 hover:text-white hover:bg-stone-700 hover:border-stone-600 transition-all duration-300">
+              <i data-lucide="twitter" class="w-4 h-4"></i>
+            </a>
+            <a href="#" aria-label="Facebook" class="w-9 h-9 rounded-xl bg-stone-800/80 border border-stone-700/50 flex items-center justify-center text-stone-400 hover:text-white hover:bg-blue-600 hover:border-transparent hover:shadow-lg hover:shadow-blue-600/20 transition-all duration-300">
+              <i data-lucide="facebook" class="w-4 h-4"></i>
+            </a>
+            <a href="#" aria-label="YouTube" class="w-9 h-9 rounded-xl bg-stone-800/80 border border-stone-700/50 flex items-center justify-center text-stone-400 hover:text-white hover:bg-red-600 hover:border-transparent hover:shadow-lg hover:shadow-red-600/20 transition-all duration-300">
+              <i data-lucide="youtube" class="w-4 h-4"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Col 2 — Quick Links -->
+        <div class="space-y-4">
+          <h4 class="font-heading font-bold text-sm text-white tracking-wide uppercase flex items-center gap-2">
+            <span class="w-6 h-[2px] rounded-full bg-brand-500"></span>
+            Quick Links
+          </h4>
+          <nav class="flex flex-col gap-2.5">
+            <a href="#hero-section" class="text-xs text-stone-400 hover:text-brand-500 hover:translate-x-1 transition-all duration-200 flex items-center gap-2 group">
+              <i data-lucide="chevron-right" class="w-3 h-3 text-stone-600 group-hover:text-brand-500 transition-colors"></i>
+              Home
+            </a>
+            <a href="#menu-catalog" class="text-xs text-stone-400 hover:text-brand-500 hover:translate-x-1 transition-all duration-200 flex items-center gap-2 group">
+              <i data-lucide="chevron-right" class="w-3 h-3 text-stone-600 group-hover:text-brand-500 transition-colors"></i>
+              Full Menu
+            </a>
+            <a href="#combo-builder-section" class="text-xs text-stone-400 hover:text-brand-500 hover:translate-x-1 transition-all duration-200 flex items-center gap-2 group">
+              <i data-lucide="chevron-right" class="w-3 h-3 text-stone-600 group-hover:text-brand-500 transition-colors"></i>
+              Meal Deal Builder
+            </a>
+            <a href="javascript:void(0)" onclick="openMyOrdersModal()" class="text-xs text-stone-400 hover:text-brand-500 hover:translate-x-1 transition-all duration-200 flex items-center gap-2 group">
+              <i data-lucide="chevron-right" class="w-3 h-3 text-stone-600 group-hover:text-brand-500 transition-colors"></i>
+              My Orders
+            </a>
+            <a href="javascript:void(0)" onclick="toggleAiChat()" class="text-xs text-stone-400 hover:text-brand-500 hover:translate-x-1 transition-all duration-200 flex items-center gap-2 group">
+              <i data-lucide="chevron-right" class="w-3 h-3 text-stone-600 group-hover:text-brand-500 transition-colors"></i>
+              AI Concierge
+            </a>
+          </nav>
+        </div>
+
+        <!-- Col 3 — Opening Hours -->
+        <div class="space-y-4">
+          <h4 class="font-heading font-bold text-sm text-white tracking-wide uppercase flex items-center gap-2">
+            <span class="w-6 h-[2px] rounded-full bg-brand-accent"></span>
+            Opening Hours
+          </h4>
+          <div class="space-y-2.5 text-xs">
+            <div class="flex justify-between items-center py-2 border-b border-stone-800/80">
+              <span class="text-stone-400 flex items-center gap-1.5"><i data-lucide="calendar-days" class="w-3 h-3 text-stone-600"></i>Mon – Fri</span>
+              <span class="text-stone-200 font-semibold">11:00 AM – 11:00 PM</span>
+            </div>
+            <div class="flex justify-between items-center py-2 border-b border-stone-800/80">
+              <span class="text-stone-400 flex items-center gap-1.5"><i data-lucide="calendar-days" class="w-3 h-3 text-stone-600"></i>Saturday</span>
+              <span class="text-stone-200 font-semibold">10:00 AM – 12:00 AM</span>
+            </div>
+            <div class="flex justify-between items-center py-2">
+              <span class="text-stone-400 flex items-center gap-1.5"><i data-lucide="calendar-days" class="w-3 h-3 text-stone-600"></i>Sunday</span>
+              <span class="text-stone-200 font-semibold">10:00 AM – 10:00 PM</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 mt-3 px-3 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="text-[11px] text-emerald-400 font-semibold">Open Now — Delivering until 11 PM</span>
+          </div>
+        </div>
+
+        <!-- Col 4 — Newsletter -->
+        <div class="space-y-4">
+          <h4 class="font-heading font-bold text-sm text-white tracking-wide uppercase flex items-center gap-2">
+            <span class="w-6 h-[2px] rounded-full bg-pizza-500"></span>
+            Stay Updated
+          </h4>
+          <p class="text-xs text-stone-400 leading-relaxed">
+            Get exclusive burger drops, flash coupons, and VIP early access delivered straight to your inbox.
+          </p>
+          <form onsubmit="event.preventDefault(); this.querySelector('button').textContent='🎉 Subscribed!'; setTimeout(()=> this.querySelector('button').innerHTML='<i data-lucide=&quot;send&quot; class=&quot;w-3.5 h-3.5&quot;></i> Subscribe'; lucide.createIcons(), 2500)" class="space-y-2.5">
+            <div class="relative">
+              <input type="email" placeholder="your@email.com" required class="w-full bg-stone-800/80 border border-stone-700/60 text-stone-100 text-xs rounded-xl pl-3.5 pr-10 py-3 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500/50 placeholder-stone-500 transition-all" />
+              <div class="absolute right-3 top-1/2 -translate-y-1/2 text-stone-600">
+                <i data-lucide="mail" class="w-3.5 h-3.5"></i>
+              </div>
+            </div>
+            <button type="submit" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-brand-accent text-white text-xs font-bold shadow-md shadow-brand-500/20 hover:shadow-brand-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300">
+              <i data-lucide="send" class="w-3.5 h-3.5"></i>
+              Subscribe
+            </button>
+          </form>
+          <!-- Trust badges -->
+          <div class="flex items-center gap-3 pt-2">
+            <div class="flex items-center gap-1.5 text-[10px] text-stone-500">
+              <i data-lucide="shield-check" class="w-3 h-3 text-emerald-500"></i>
+              <span>No Spam</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-[10px] text-stone-500">
+              <i data-lucide="zap" class="w-3 h-3 text-amber-500"></i>
+              <span>Weekly Deals</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="relative border-t border-stone-800/80">
+      <div class="max-w-7xl mx-auto px-4 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <p class="text-[11px] text-stone-500 text-center sm:text-left">
+          © 2026 <span class="text-stone-300 font-semibold">BISTRO&STACK</span>. All rights reserved. Crafted with 🔥 and code.
+        </p>
+        <div class="flex items-center gap-4 text-[11px] text-stone-500">
+          <a href="#" class="hover:text-stone-300 transition-colors">Privacy Policy</a>
+          <span class="w-1 h-1 rounded-full bg-stone-700"></span>
+          <a href="#" class="hover:text-stone-300 transition-colors">Terms of Service</a>
+          <span class="w-1 h-1 rounded-full bg-stone-700"></span>
+          <a href="#" class="hover:text-stone-300 transition-colors">Allergen Info</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==========================================================
+       AI CONCIERGE FLOATING BUTTON & CHAT WINDOW
+       ========================================================== -->
+  <!-- Floating Button -->
+  <button id="ai-concierge-btn" onclick="toggleAiChat()" class="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white font-bold text-xs shadow-xl shadow-orange-500/25 hover:shadow-orange-500/40 hover:scale-105 active:scale-95 transition-all duration-300 group border border-amber-300/30">
+    <div class="relative flex items-center justify-center">
+      <i data-lucide="sparkles" class="w-4 h-4 animate-pulse text-amber-100"></i>
+      <span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+    </div>
+    <span class="tracking-wide">Ask Chef Gemini</span>
+  </button>
+
+  <!-- AI Chat Modal Drawer -->
+  <div id="ai-concierge-modal" class="fixed bottom-20 right-4 sm:right-6 w-96 max-w-[calc(100vw-2rem)] h-[520px] max-h-[82vh] z-50 bg-stone-900/95 backdrop-blur-2xl border border-stone-700/70 rounded-3xl shadow-2xl flex flex-col overflow-hidden transition-all duration-300 transform scale-95 opacity-0 pointer-events-none">
+    <!-- Header -->
+    <div class="px-4 py-3.5 bg-gradient-to-r from-stone-900 via-stone-800 to-stone-900 border-b border-stone-700/60 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-white shadow-md">
+          <i data-lucide="bot" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <div class="text-xs font-bold text-stone-100 flex items-center gap-1.5">
+            <span>Chef Gemini</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          </div>
+          <div class="text-[10px] text-stone-400">Powered by Gemini 3.7 Flash</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-1">
+        <button onclick="clearAiChat()" title="Clear chat" class="p-1.5 rounded-lg text-stone-400 hover:text-stone-200 hover:bg-stone-800 transition-colors">
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+        </button>
+        <button onclick="toggleAiChat()" title="Close" class="p-1.5 rounded-lg text-stone-400 hover:text-stone-200 hover:bg-stone-800 transition-colors">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Messages Body -->
+    <div id="ai-messages-container" class="flex-1 p-4 overflow-y-auto space-y-3 custom-scrollbar text-xs">
+      <!-- Dynamically filled by JS -->
+    </div>
+
+    <!-- Input Bar -->
+    <div class="p-3 bg-stone-900 border-t border-stone-700/60">
+      <form onsubmit="event.preventDefault(); handleAiChatSubmit();" class="flex items-center gap-2">
+        <input 
+          id="ai-chat-input" 
+          type="text" 
+          placeholder="Ask about burgers, spicy combos, dietary info..." 
+          class="flex-1 bg-stone-800 border border-stone-700 text-stone-100 text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 placeholder-stone-500"
+        />
+        <button 
+          type="submit" 
+          class="p-2.5 rounded-xl bg-brand-500 hover:bg-brand-600 active:scale-95 text-white transition-all shadow-md shadow-brand-500/20"
+        >
+          <i data-lucide="send" class="w-3.5 h-3.5"></i>
+        </button>
+      </form>
+    </div>
+  </div>
 </body>
 </html>
