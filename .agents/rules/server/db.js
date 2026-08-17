@@ -1,10 +1,22 @@
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DB_FILE = path.join(__dirname, 'burger_db.json');
+
+// Helper for secure password hashing
+function hashPassword(password, salt = crypto.randomBytes(16).toString('hex')) {
+  const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+  return { salt, hash };
+}
+
+function verifyPassword(password, salt, originalHash) {
+  const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+  return hash === originalHash;
+}
 
 // Default initial database state
 const INITIAL_DATA = {
@@ -201,6 +213,7 @@ const INITIAL_DATA = {
       }
     ]
   },
+  users: [],
   orders: []
 };
 
@@ -213,6 +226,8 @@ function initDB() {
     if (fs.existsSync(DB_FILE)) {
       const raw = fs.readFileSync(DB_FILE, 'utf8');
       dbData = JSON.parse(raw);
+      if (!dbData.users) dbData.users = [];
+      if (!dbData.orders) dbData.orders = [];
     } else {
       saveDB();
     }
@@ -240,8 +255,10 @@ export const db = {
   getMenuItems(mode = 'burger', { category = 'all', diet = 'all', search = '', sort = 'popular' } = {}) {
     const list = mode === 'pizza' ? dbData.menu.pizzas : dbData.menu.burgers;
     let filtered = list.filter(item => {
+      // Normalize diet to always be an array (guards against DB file corruption where it may be stored as a string)
+      const dietArr = Array.isArray(item.diet) ? item.diet : (item.diet ? String(item.diet).split(' ') : []);
       const matchCat = category === 'all' || item.category === category;
-      const matchDiet = diet === 'all' || (item.diet && item.diet.includes(diet));
+      const matchDiet = diet === 'all' || dietArr.includes(diet);
       const matchSearch = !search || item.name.toLowerCase().includes(search.toLowerCase()) || item.desc.toLowerCase().includes(search.toLowerCase());
       return matchCat && matchDiet && matchSearch;
     });
@@ -260,6 +277,80 @@ export const db = {
     return dbData.coupons.find(c => c.code === cleanCode && c.active) || null;
   },
 
+  // User Authentication & Management
+  registerUser({ name, email, password, phone = '', address = '' }) {
+    const cleanEmail = (email || '').trim().toLowerCase();
+    if (!cleanEmail || !password) return { success: false, error: 'Email and password are required' };
+
+    const existing = dbData.users.find(u => u.email.toLowerCase() === cleanEmail);
+    if (existing) {
+      return { success: false, error: 'An account with this email address already exists' };
+    }
+
+    const { salt, hash } = hashPassword(password);
+    const userId = `USR-${Date.now().toString(36).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
+    const token = `tok_${crypto.randomBytes(24).toString('hex')}`;
+
+    const newUser = {
+      userId,
+      name: name.trim() || 'Food Lover',
+      email: cleanEmail,
+      phone: phone.trim() || '',
+      address: address.trim() || '',
+      salt,
+      passwordHash: hash,
+      token,
+      createdAt: new Date().toISOString(),
+      role: 'customer'
+    };
+
+    dbData.users.push(newUser);
+    saveDB();
+
+    const { salt: _s, passwordHash: _p, ...safeUser } = newUser;
+    return { success: true, user: safeUser, token };
+  },
+
+  loginUser({ email, password }) {
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const user = dbData.users.find(u => u.email.toLowerCase() === cleanEmail);
+    if (!user) {
+      return { success: false, error: 'Invalid email or password' };
+    }
+
+    const isValid = verifyPassword(password, user.salt, user.passwordHash);
+    if (!isValid) {
+      return { success: false, error: 'Invalid email or password' };
+    }
+
+    const token = `tok_${crypto.randomBytes(24).toString('hex')}`;
+    user.token = token;
+    saveDB();
+
+    const { salt: _s, passwordHash: _p, ...safeUser } = user;
+    return { success: true, user: safeUser, token };
+  },
+
+  getUserByToken(token) {
+    if (!token) return null;
+    const cleanToken = token.replace('Bearer ', '').trim();
+    const user = dbData.users.find(u => u.token === cleanToken);
+    if (!user) return null;
+    const { salt: _s, passwordHash: _p, ...safeUser } = user;
+    return safeUser;
+  },
+
+  updateUserProfile(userId, { name, phone, address }) {
+    const user = dbData.users.find(u => u.userId === userId);
+    if (!user) return null;
+    if (name) user.name = name.trim();
+    if (phone) user.phone = phone.trim();
+    if (address) user.address = address.trim();
+    saveDB();
+    const { salt: _s, passwordHash: _p, ...safeUser } = user;
+    return safeUser;
+  },
+
   // Create and save new order
   createOrder(orderPayload) {
     const orderId = `ORD-${Math.floor(100000 + Math.random() * 900000)}`;
@@ -267,6 +358,7 @@ export const db = {
     
     const newOrder = {
       orderId,
+      userId: orderPayload.userId || null,
       createdAt: now.toISOString(),
       customer: {
         name: orderPayload.customerName,
@@ -308,6 +400,17 @@ export const db = {
     return dbData.orders.slice(0, limit);
   },
 
+  // Get orders by customer email or user ID
+  getUserOrders(userIdOrEmail) {
+    if (!userIdOrEmail) return [];
+    const val = userIdOrEmail.toLowerCase();
+    return dbData.orders.filter(o => 
+      (o.userId && o.userId.toLowerCase() === val) ||
+      (o.customer?.phone && o.customer.phone === val) ||
+      (o.customer?.name && o.customer.name.toLowerCase() === val)
+    );
+  },
+
   // Update order status
   updateOrderStatus(orderId, newStatus) {
     const order = this.getOrderById(orderId);
@@ -319,3 +422,4 @@ export const db = {
 };
 
 export default db;
+

@@ -7,7 +7,17 @@ const router = Router();
 // POST /api/orders — Secure order placement
 router.post('/', orderPlacementLimiter, (req, res, next) => {
   try {
-    const { customerName, deliveryAddress, phone, paymentMethod, items, tip = 0, couponCode } = req.body;
+    const { customerName, deliveryAddress, phone, paymentMethod, items, tip = 0, couponCode, userId } = req.body;
+
+    // Optional auth token verification to associate order
+    let authenticatedUserId = userId || null;
+    const authHeader = req.headers['authorization'];
+    if (authHeader) {
+      const authUser = db.getUserByToken(authHeader);
+      if (authUser) {
+        authenticatedUserId = authUser.userId;
+      }
+    }
 
     // Strict validation
     if (!customerName || customerName.trim().length < 2) {
@@ -55,6 +65,7 @@ router.post('/', orderPlacementLimiter, (req, res, next) => {
 
     // Save order
     const createdOrder = db.createOrder({
+      userId: authenticatedUserId,
       customerName,
       deliveryAddress,
       phone,
@@ -72,6 +83,51 @@ router.post('/', orderPlacementLimiter, (req, res, next) => {
       success: true,
       message: 'Order created successfully and queued in the kitchen!',
       data: createdOrder
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/orders — List recent orders
+router.get('/', (req, res, next) => {
+  try {
+    const recent = db.getRecentOrders(50);
+    return res.json({
+      success: true,
+      count: recent.length,
+      data: recent
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/orders/my-orders — Fetch orders for logged-in user or by phone/email
+// IMPORTANT: Must be declared BEFORE /:orderId wildcard routes to prevent Express
+// from matching the literal string "my-orders" as an orderId parameter.
+router.get('/my-orders', (req, res, next) => {
+  try {
+    const authHeader = req.headers['authorization'];
+    const { email, phone, userId } = req.query;
+    let identifier = userId || email || phone;
+
+    if (authHeader) {
+      const authUser = db.getUserByToken(authHeader);
+      if (authUser) {
+        identifier = authUser.userId;
+      }
+    }
+
+    if (!identifier) {
+      return res.json({ success: true, data: [] });
+    }
+
+    const userOrders = db.getUserOrders(identifier);
+    return res.json({
+      success: true,
+      count: userOrders.length,
+      data: userOrders
     });
   } catch (err) {
     next(err);
@@ -142,20 +198,6 @@ router.get('/:orderId/track', (req, res, next) => {
           positionPercent: courierPositionPercent
         }
       }
-    });
-  } catch (err) {
-    next(err);
-  }
-});
-
-// GET /api/orders — List recent orders
-router.get('/', (req, res, next) => {
-  try {
-    const recent = db.getRecentOrders(50);
-    return res.json({
-      success: true,
-      count: recent.length,
-      data: recent
     });
   } catch (err) {
     next(err);

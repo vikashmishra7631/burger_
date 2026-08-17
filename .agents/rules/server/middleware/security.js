@@ -25,16 +25,30 @@ export const orderPlacementLimiter = rateLimit({
 });
 
 // Sanitization & Security Helper Middleware
+function sanitizeValue(val) {
+  if (typeof val === 'string') {
+    return val
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .replace(/[<>]/g, '')
+      .trim();
+  }
+  if (Array.isArray(val)) {
+    return val.map(sanitizeValue);
+  }
+  if (val !== null && typeof val === 'object') {
+    const clean = {};
+    for (const k of Object.keys(val)) {
+      clean[k] = sanitizeValue(val[k]);
+    }
+    return clean;
+  }
+  return val;
+}
+
 export function sanitizeInputs(req, res, next) {
   if (req.body && typeof req.body === 'object') {
     for (const key of Object.keys(req.body)) {
-      if (typeof req.body[key] === 'string') {
-        // Strip potential script injection tags and trim whitespace
-        req.body[key] = req.body[key]
-          .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-          .replace(/[<>]/g, '')
-          .trim();
-      }
+      req.body[key] = sanitizeValue(req.body[key]);
     }
   }
   next();
