@@ -237,7 +237,7 @@
       animation-play-state: paused;
     }
 
-    /* THE SMOOTH PHYSICAL GLIDING FOOD ELEMENT */
+    /* THE SMOOTH PHYSICAL GLIDING FOOD ELEMENT — desktop only */
     #scrolling-master-food {
       position: fixed;
       top: 0;
@@ -246,6 +246,13 @@
       z-index: 45;
       will-change: transform, opacity;
       transform-origin: top left;
+    }
+
+    /* Hide the gliding food on phones & tablets — it only makes sense on wide screens */
+    @media (max-width: 1023px) {
+      #scrolling-master-food {
+        display: none !important;
+      }
     }
 
     .food-glow {
@@ -1614,6 +1621,13 @@
 
       if (!foodEl || !heroSlot || !menuSlot) return;
 
+      // Skip animation entirely on mobile/touch devices — element is hidden via CSS anyway
+      // but this also saves battery and avoids rAF loops on phones
+      const isMobile = window.innerWidth < 1024 || ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+      if (isMobile) {
+        if (foodEl) foodEl.style.display = 'none';
+        return;
+      }
       let curX = 0, curY = 0, curW = 200, curH = 200, curRotate = 0;
       let initialized = false;
 
