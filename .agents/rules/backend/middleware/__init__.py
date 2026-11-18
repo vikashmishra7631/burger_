@@ -1,1 +1,0 @@
-"""Bistro & Stack Middleware Package"""
